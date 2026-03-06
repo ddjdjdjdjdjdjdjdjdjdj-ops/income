@@ -5,15 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>মিষ্টি আম - ইনকাম</title>
     <style>
-        body { font-family: 'Arial', sans-serif; background: #fff5f8; text-align: center; padding: 15px; }
-        .box { background: #fff; padding: 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 380px; margin: auto; }
+        body { font-family: 'Arial', sans-serif; background: #fff5f8; text-align: center; padding: 15px; margin-bottom: 50px; }
+        .box { background: #fff; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 380px; margin: auto; }
         .balance { font-size: 35px; font-weight: bold; color: #d35400; margin: 10px 0; }
         button { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; }
         .ad-btn { background: #27ae60; color: #fff; }
         .wd-btn { background: #2980b9; color: #fff; }
         .wd-btn:disabled { background: #ccc; cursor: not-allowed; }
-        .wa-btn { background: #25d366; color: #fff; text-decoration: none; display: block; padding: 12px; margin-top: 10px; border-radius: 8px; }
-        .tg-btn { background: #0088cc; color: #fff; text-decoration: none; display: block; padding: 12px; margin-top: 5px; border-radius: 8px; }
+        
+        /* সব সময় নিচে থাকার জন্য বিশেষ বক্স */
+        .sticky-footer { 
+            margin-top: 20px; 
+            background: #fff0f0; 
+            padding: 15px; 
+            border-radius: 15px; 
+            border: 2px solid #ff4d4d; 
+        }
+        .tg-link { 
+            background: #0088cc; 
+            color: #fff; 
+            text-decoration: none; 
+            display: block; 
+            padding: 12px; 
+            margin-top: 10px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+        }
+        .condition-text { 
+            font-size: 14px; 
+            color: #d32f2f; 
+            font-weight: bold; 
+            line-height: 1.6; 
+        }
         .user-id { font-size: 13px; color: #888; margin-bottom: 10px; }
     </style>
 </head>
@@ -34,11 +57,11 @@
     
     <button id="wb" class="wd-btn" onclick="wd()" disabled>💳 টাকা তুলুন (মিনিমাম ৫০০৳)</button>
 
-    <div style="margin-top:20px; background:#f0f4f1; padding:15px; border-radius:15px;">
-        <strong style="color:#2c3e50;">🎁 রেফার করে ১০৳ আয় করুন</strong>
-        <p style="font-size:12px; color:#666;">আপনার লিঙ্কে বন্ধু ক্লিক করলেই পাবেন ১০৳</p>
-        <a id="wa" href="#" target="_blank" class="wa-btn">WhatsApp-এ শেয়ার করুন</a>
-        <a id="tg" href="#" target="_blank" class="tg-btn">Telegram-এ শেয়ার করুন</a>
+    <div class="sticky-footer">
+        <p class="condition-text">⚠️ বিশেষ ঘোষণা:<br>উইথড্র (WD) পেতে আপনার ৫ জন বন্ধুকে আমাদের টেলিগ্রাম চ্যানেলে শেয়ার করুন। ৫ জন জয়েন হলেই পেমেন্ট পাবেন।</p>
+        
+        <strong style="color:#0088cc;">📢 আমাদের টেলিগ্রাম চ্যানেল:</strong>
+        <a href="https://t.me/mistiam5" target="_blank" class="tg-link">চ্যানেলে জয়েন করুন</a>
     </div>
 </div>
 
@@ -51,31 +74,16 @@
     document.getElementById('uid').innerText = myID;
 
     function initApp() {
-        // ১. নতুন জয়েনিং বোনাস ৫০ টাকা
         if (!localStorage.getItem('joined')) {
             b = 50;
             localStorage.setItem('joined', 'true');
-            alert("মিষ্টি আম সাইটে আপনাকে স্বাগতম! অ্যাকাউন্ট খোলায় ৫০ টাকা বোনাস পেয়েছেন।");
-        }
-        
-        // ২. রেফার ট্র্যাকিং (সিম্পল ট্রিক)
-        const p = new URLSearchParams(window.location.search);
-        if (p.has('ref')) {
-            // কেউ লিঙ্কে ক্লিক করলে ইউজার ১০ টাকা পাবে (এটি স্ট্যাটিক সাইটে নিজের ব্রাউজারে যোগ হবে)
-            // নোট: সত্যিকারের রেফারেল সিস্টেমের জন্য ডাটাবেস লাগে, এটি আপনার নিজের ফোনে ১০ টাকা যোগ করবে টেস্টের জন্য।
-            b += 10;
-            alert("আপনার রেফার লিঙ্কে একজন বন্ধু ক্লিক করেছে! ১০ টাকা যোগ হলো।");
+            alert("মিষ্টি আম সাইটে স্বাগতম! আপনি ৫০ টাকা বোনাস পেয়েছেন।");
         }
         up();
     }
 
-    let myRefLink = window.location.href.split('?')[0] + "?ref=" + myID;
-    let shareText = "মিষ্টি আম সাইটে অ্যাকাউন্ট খুললেই ৫০ টাকা ফ্রি! সাথে প্রতিদিন ইনকাম ৫০০ টাকা। লিঙ্ক: " + myRefLink;
-    document.getElementById('wa').href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(shareText);
-    document.getElementById('tg').href = "https://telegram.me/share/url?url=" + encodeURIComponent(myRefLink) + "&text=" + encodeURIComponent(shareText);
-
     function showAd() {
-        if (a >= 10) { alert("আজকের ১০টি অ্যাড দেখা শেষ!"); return; }
+        if (a >= 10) { alert("আজকের অ্যাড দেখার লিমিট শেষ!"); return; }
         document.getElementById('ab').disabled = true;
         document.getElementById('tm').style.display = 'block';
         window.open(links[a % 2], '_blank');
@@ -83,16 +91,14 @@
             b += 5; a += 1; up();
             document.getElementById('ab').disabled = false;
             document.getElementById('tm').style.display = 'none';
-            alert("অভিনন্দন! ৫ টাকা আপনার ব্যালেন্সে যোগ হয়েছে।");
         }, 5000);
     }
 
     function wd() {
-        let number = prompt("টাকা পাঠানোর জন্য আপনার বিকাশ বা নগদ নম্বর লিখুন:");
-        if (number) {
-            alert("ধন্যবাদ! আপনার " + b + " টাকা উইথড্র অনুরোধ " + number + " নম্বরে পাঠানো হয়েছে। ২৪ ঘণ্টার মধ্যে পেমেন্ট পেয়ে যাবেন।");
-            b = 0; 
-            up();
+        let num = prompt("আপনার বিকাশ বা নগদ নাম্বার দিন:");
+        if (num) {
+            alert("আপনার রিকোয়েস্ট সফল! ৫ জন বন্ধুকে শেয়ার করার স্ক্রিনশট আমাদের টেলিগ্রাম চ্যানেলে জমা দিন। যাচাই শেষে ২৪ ঘণ্টায় পেমেন্ট পাবেন।");
+            b = 0; up();
         }
     }
 
@@ -101,15 +107,7 @@
         localStorage.setItem('a', a);
         document.getElementById('bl').innerText = b;
         document.getElementById('ac').innerText = a;
-        
-        let wb = document.getElementById('wb');
-        if (b >= 500) {
-            wb.disabled = false;
-            wb.innerText = "💳 টাকা তুলুন";
-        } else {
-            wb.disabled = true;
-            wb.innerText = "💳 টাকা তুলুন (মিনিমাম ৫০০৳)";
-        }
+        document.getElementById('wb').disabled = (b < 500);
     }
 </script>
 

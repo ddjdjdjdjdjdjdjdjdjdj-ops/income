@@ -15,11 +15,13 @@
         .ad-btn { background-color: #4caf50; color: white; }
         .ad-btn:disabled { background-color: #ccc; cursor: not-allowed; }
         .withdraw-btn { background-color: #1e88e5; color: white; }
-        .refer-box { margin-top: 20px; padding: 10px; background: #f1f8e9; border-radius: 10px; font-size: 14px; }
-        #timerText { color: #d32f2f; font-weight: bold; margin-top: 5px; }
+        .refer-section { margin-top: 20px; padding: 15px; background: #f1f8e9; border-radius: 15px; }
+        .share-btns { display: flex; gap: 10px; margin-top: 10px; }
+        .wa-btn { background-color: #25D366; color: white; padding: 10px; border-radius: 5px; text-decoration: none; flex: 1; font-size: 12px; }
+        .tg-btn { background-color: #0088cc; color: white; padding: 10px; border-radius: 5px; text-decoration: none; flex: 1; font-size: 12px; }
     </style>
 </head>
-<body>
+<body onload="checkReferral()">
 
 <div class="container">
     <img src="https://cdn-icons-png.flaticon.com/512/3137/3137044.png" alt="Mango" class="logo">
@@ -32,84 +34,76 @@
     </div>
 
     <button id="adBtn" class="ad-btn" onclick="showAd()">📺 অ্যাড দেখুন (৫৳)</button>
-    <p id="timerText" style="display:none;">পরবর্তী অ্যাড <span id="timer">5</span> সেকেন্ড পর...</p>
+    <p id="timerText" style="display:none; color:red;">অপেক্ষা করুন: <span id="timer">5</span> সেকেন্ড</p>
 
     <button class="withdraw-btn" onclick="withdraw()">💳 টাকা তুলুন (Withdraw)</button>
 
-    <div class="refer-box">
-        <strong>🎁 রেফার বোনাস:</strong><br>
-        বন্ধুকে রেফার করলেই ১০৳ বোনাস!<br>
-        <button onclick="referFriend()" style="padding: 5px; margin-top: 5px; background: #81c784; width: auto; color: white;">রেফার লিঙ্ক কপি করুন</button>
+    <div class="refer-section">
+        <strong>🎁 রেফার করে ইনকাম করুন:</strong><br>
+        বন্ধুকে শেয়ার করুন, সে লিঙ্কে ক্লিক করলে পাবেন ১০৳!
+        <div class="share-btns">
+            <a id="shareWA" href="#" class="wa-btn">WhatsApp-এ পাঠান</a>
+            <a id="shareTG" href="#" class="tg-btn">Telegram-এ পাঠান</a>
+        </div>
     </div>
 </div>
 
 <script>
-    // আপনার দেওয়া অ্যাড লিঙ্ক দুটি এখানে সেট করা হয়েছে
-    const adLinks = [
-        "https://omg10.com/4/10677665",
-        "https://omg10.com/4/10678359"
-    ];
-
+    const adLinks = ["https://omg10.com/4/10677665", "https://omg10.com/4/10678359"];
     let balance = localStorage.getItem('balance') ? parseInt(localStorage.getItem('balance')) : 0;
     let adCount = localStorage.getItem('adCount') ? parseInt(localStorage.getItem('adCount')) : 0;
 
+    // UI আপডেট
     document.getElementById('balance').innerText = balance;
     document.getElementById('adCount').innerText = adCount;
 
-    function showAd() {
-        if (adCount >= 10) {
-            alert("আজকের ১০টি অ্যাড দেখা শেষ! কাল আবার চেষ্টা করুন।");
-            return;
-        }
+    // রেফার লিঙ্ক তৈরি (আপনার ওয়েবসাইটের লিঙ্কের সাথে ?ref=1 যোগ হবে)
+    let myReferLink = window.location.href.split('?')[0] + "?ref=join";
+    document.getElementById('shareWA').href = "https://api.whatsapp.com/send?text=এই লিঙ্কে ক্লিক করে ইনকাম করো: " + myReferLink;
+    document.getElementById('shareTG').href = "https://telegram.me/share/url?url=" + myReferLink + "&text=মিষ্টি আম সাইটে ইনকাম শুরু করো!";
 
+    // কেউ রেফার লিঙ্কে ক্লিক করলে বোনাস পাবে
+    function checkReferral() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('ref') && !localStorage.getItem('referUsed')) {
+            balance += 10;
+            localStorage.setItem('referUsed', 'true'); // এক ব্যক্তি একবারই বোনাস পাবে
+            updateUI();
+            alert("অভিনন্দন! রেফারেল লিঙ্ক থেকে আসার জন্য ১০ টাকা বোনাস পেয়েছেন।");
+        }
+    }
+
+    function showAd() {
+        if (adCount >= 10) { alert("আজকের লিমিট শেষ!"); return; }
+        
         let btn = document.getElementById('adBtn');
-        let timerText = document.getElementById('timerText');
-        let timerDisplay = document.getElementById('timer');
-        
         btn.disabled = true;
-        timerText.style.display = 'block';
+        document.getElementById('timerText').style.display = 'block';
         
-        // পর্যায়ক্রমে আপনার লিঙ্ক দুটি ওপেন হবে
-        let currentAd = adLinks[adCount % adLinks.length];
-        window.open(currentAd, '_blank');
+        window.open(adLinks[adCount % adLinks.length], '_blank');
 
         let timeLeft = 5;
         let countdown = setInterval(() => {
             timeLeft--;
-            timerDisplay.innerText = timeLeft;
+            document.getElementById('timer').innerText = timeLeft;
             if (timeLeft <= 0) {
                 clearInterval(countdown);
                 balance += 5;
                 adCount += 1;
                 updateUI();
                 btn.disabled = false;
-                timerText.style.display = 'none';
-                timerDisplay.innerText = 5;
-                alert("অভিনন্দন! ৫ টাকা যোগ হয়েছে।");
+                document.getElementById('timerText').style.display = 'none';
+                document.getElementById('timer').innerText = 5;
+                alert("৫ টাকা যোগ হয়েছে!");
             }
         }, 1000);
     }
 
     function withdraw() {
-        if (balance < 500) {
-            alert("মিনিমাম ৫০০ টাকা হলে উইথড্র করতে পারবেন।");
-        } else {
-            let num = prompt("আপনার বিকাশ বা নগদ নাম্বার দিন:");
-            if (num) {
-                alert("উইথড্র রিকোয়েস্ট সফল! আমরা আপনার নাম্বারে টাকা পাঠিয়ে দেব।");
-            }
-        }
-    }
-
-    function referFriend() {
-        navigator.clipboard.writeText(window.location.href);
-        alert("লিঙ্ক কপি হয়েছে! বন্ধুদের পাঠিয়ে ইনকাম করুন।");
-        
-        let confirmRefer = confirm("বন্ধু কি জয়েন করেছে? করলে ১০৳ বোনাস নিতে OK চাপুন।");
-        if (confirmRefer) {
-            balance += 10;
-            updateUI();
-            alert("১০ টাকা রেফার বোনাস যোগ হয়েছে!");
+        if (balance < 500) { alert("৫০০ টাকা হলে উইথড্র করতে পারবেন।"); }
+        else { 
+            let num = prompt("বিকাশ/নগদ নাম্বার দিন:");
+            if(num) alert("রিকোয়েস্ট সফল!"); 
         }
     }
 

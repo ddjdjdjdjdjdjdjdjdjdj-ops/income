@@ -3,117 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>মিষ্টি আম - ইনকাম সাইট</title>
+    <title>মিষ্টি আম - ইনকাম</title>
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #fce4ec; text-align: center; margin: 0; padding: 20px; }
-        .container { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
-        .logo { width: 80px; }
-        h1 { color: #e65100; margin: 10px 0; }
-        .balance-box { border: 2px dashed #ffb74d; padding: 15px; border-radius: 15px; background: #fff8e1; margin: 20px 0; }
-        .amount { font-size: 30px; font-weight: bold; color: #e65100; }
-        button { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .ad-btn { background-color: #4caf50; color: white; }
-        .ad-btn:disabled { background-color: #ccc; cursor: not-allowed; }
-        .withdraw-btn { background-color: #1e88e5; color: white; }
-        .refer-section { margin-top: 20px; padding: 15px; background: #f1f8e9; border-radius: 15px; }
-        .share-btns { display: flex; gap: 10px; margin-top: 10px; }
-        .wa-btn { background-color: #25D366; color: white; padding: 10px; border-radius: 5px; text-decoration: none; flex: 1; font-size: 12px; }
-        .tg-btn { background-color: #0088cc; color: white; padding: 10px; border-radius: 5px; text-decoration: none; flex: 1; font-size: 12px; }
+        body { font-family: sans-serif; background: #fff5f8; text-align: center; padding: 15px; }
+        .box { background: #fff; padding: 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 380px; margin: auto; }
+        .balance { font-size: 32px; font-weight: bold; color: #d35400; margin: 10px 0; }
+        button { width: 100%; padding: 12px; margin: 8px 0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .ad-btn { background: #27ae60; color: #fff; }
+        .wa-btn { background: #25d366; color: #fff; text-decoration: none; display: block; padding: 10px; margin-top: 5px; border-radius: 5px; }
+        .tg-btn { background: #0088cc; color: #fff; text-decoration: none; display: block; padding: 10px; margin-top: 5px; border-radius: 5px; }
     </style>
 </head>
-<body onload="checkReferral()">
-
-<div class="container">
-    <img src="https://cdn-icons-png.flaticon.com/512/3137/3137044.png" alt="Mango" class="logo">
+<body onload="checkBonus()">
+<div class="box">
     <h1>মিষ্টি আম 💰</h1>
-    
-    <div class="balance-box">
-        <div>আপনার বর্তমান ব্যালেন্স</div>
-        <div class="amount"><span id="balance">0</span> ৳</div>
-        <div style="margin-top: 10px;">আজকের অ্যাড: <span id="adCount">0</span>/10</div>
+    <div style="background: #fff8e1; border: 1px dashed orange; border-radius: 10px; padding: 10px;">
+        <p>ব্যালেন্স: <span class="balance" id="bl">0</span> ৳</p>
+        <p>আজকের অ্যাড: <span id="ac">0</span>/10</p>
     </div>
-
-    <button id="adBtn" class="ad-btn" onclick="showAd()">📺 অ্যাড দেখুন (৫৳)</button>
-    <p id="timerText" style="display:none; color:red;">অপেক্ষা করুন: <span id="timer">5</span> সেকেন্ড</p>
-
-    <button class="withdraw-btn" onclick="withdraw()">💳 টাকা তুলুন (Withdraw)</button>
-
-    <div class="refer-section">
-        <strong>🎁 রেফার করে ইনকাম করুন:</strong><br>
-        বন্ধুকে শেয়ার করুন, সে লিঙ্কে ক্লিক করলে পাবেন ১০৳!
-        <div class="share-btns">
-            <a id="shareWA" href="#" class="wa-btn">WhatsApp-এ পাঠান</a>
-            <a id="shareTG" href="#" class="tg-btn">Telegram-এ পাঠান</a>
-        </div>
+    <button id="ab" class="ad-btn" onclick="showAd()">📺 অ্যাড দেখুন (৫৳)</button>
+    <p id="tm" style="display:none; color:red;">৫ সেকেন্ড অপেক্ষা করুন...</p>
+    <button style="background: #2980b9; color:#fff;" onclick="wd()">💳 টাকা তুলুন</button>
+    <div style="margin-top:20px; background:#f0f4f1; padding:10px; border-radius:10px;">
+        <strong>🎁 রেফার বোনাস (১০৳)</strong>
+        <a id="wa" href="#" class="wa-btn">WhatsApp-এ শেয়ার</a>
+        <a id="tg" href="#" class="tg-btn">Telegram-এ শেয়ার</a>
     </div>
 </div>
 
 <script>
-    const adLinks = ["https://omg10.com/4/10677665", "https://omg10.com/4/10678359"];
-    let balance = localStorage.getItem('balance') ? parseInt(localStorage.getItem('balance')) : 0;
-    let adCount = localStorage.getItem('adCount') ? parseInt(localStorage.getItem('adCount')) : 0;
+    const links = ["https://omg10.com/4/10677665", "https://omg10.com/4/10678359"];
+    
+    // ব্যালেন্স লোড করা
+    let b = localStorage.getItem('b') ? parseInt(localStorage.getItem('b')) : 0;
+    let a = localStorage.getItem('a') ? parseInt(localStorage.getItem('a')) : 0;
 
-    // UI আপডেট
-    document.getElementById('balance').innerText = balance;
-    document.getElementById('adCount').innerText = adCount;
-
-    // রেফার লিঙ্ক তৈরি (আপনার ওয়েবসাইটের লিঙ্কের সাথে ?ref=1 যোগ হবে)
-    let myReferLink = window.location.href.split('?')[0] + "?ref=join";
-    document.getElementById('shareWA').href = "https://api.whatsapp.com/send?text=এই লিঙ্কে ক্লিক করে ইনকাম করো: " + myReferLink;
-    document.getElementById('shareTG').href = "https://telegram.me/share/url?url=" + myReferLink + "&text=মিষ্টি আম সাইটে ইনকাম শুরু করো!";
-
-    // কেউ রেফার লিঙ্কে ক্লিক করলে বোনাস পাবে
-    function checkReferral() {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('ref') && !localStorage.getItem('referUsed')) {
-            balance += 10;
-            localStorage.setItem('referUsed', 'true'); // এক ব্যক্তি একবারই বোনাস পাবে
-            updateUI();
-            alert("অভিনন্দন! রেফারেল লিঙ্ক থেকে আসার জন্য ১০ টাকা বোনাস পেয়েছেন।");
+    function checkBonus() {
+        // নতুন অ্যাকাউন্ট খুললে ৫০ টাকা ফ্রি
+        if (!localStorage.getItem('joined')) {
+            b = 50;
+            localStorage.setItem('joined', 'true');
+            up();
+            alert("অ্যাকাউন্ট খোলার জন্য ৫০ টাকা বোনাস পেয়েছেন!");
+        }
+        
+        // রেফার লিঙ্ক চেক (যে রেফার করেছে তার জন্য ১০ টাকা)
+        const p = new URLSearchParams(window.location.search);
+        if (p.has('ref')) {
+            // সত্যিকারের সার্ভার ছাড়া রেফারারকে টাকা দেওয়া কঠিন, 
+            // তাই এটি একটি ডেমো পপআপ দেখাবে।
+            alert("আপনি বন্ধুর রেফারে জয়েন করেছেন!");
         }
     }
+
+    // রেফার লিঙ্ক তৈরি
+    let refL = window.location.href.split('?')[0] + "?ref=" + Math.floor(Math.random() * 1000);
+    document.getElementById('wa').href = "https://api.whatsapp.com/send?text=একাউন্ট খুললেই ৫০ টাকা ফ্রি! লিঙ্কে ক্লিক করো: " + refL;
+    document.getElementById('tg').href = "https://telegram.me/share/url?url=" + refL + "&text=৫০ টাকা বোনাস নিন!";
 
     function showAd() {
-        if (adCount >= 10) { alert("আজকের লিমিট শেষ!"); return; }
-        
-        let btn = document.getElementById('adBtn');
-        btn.disabled = true;
-        document.getElementById('timerText').style.display = 'block';
-        
-        window.open(adLinks[adCount % adLinks.length], '_blank');
-
-        let timeLeft = 5;
-        let countdown = setInterval(() => {
-            timeLeft--;
-            document.getElementById('timer').innerText = timeLeft;
-            if (timeLeft <= 0) {
-                clearInterval(countdown);
-                balance += 5;
-                adCount += 1;
-                updateUI();
-                btn.disabled = false;
-                document.getElementById('timerText').style.display = 'none';
-                document.getElementById('timer').innerText = 5;
-                alert("৫ টাকা যোগ হয়েছে!");
-            }
-        }, 1000);
+        if (a >= 10) { alert("আজকের লিমিট শেষ!"); return; }
+        document.getElementById('ab').disabled = true;
+        document.getElementById('tm').style.display = 'block';
+        window.open(links[a % 2], '_blank');
+        setTimeout(() => {
+            b += 5; a += 1; up();
+            document.getElementById('ab').disabled = false;
+            document.getElementById('tm').style.display = 'none';
+            alert("৫ টাকা যোগ হয়েছে!");
+        }, 5000);
     }
 
-    function withdraw() {
-        if (balance < 500) { alert("৫০০ টাকা হলে উইথড্র করতে পারবেন।"); }
-        else { 
-            let num = prompt("বিকাশ/নগদ নাম্বার দিন:");
-            if(num) alert("রিকোয়েস্ট সফল!"); 
-        }
+    function wd() {
+        if (b < 500) alert("৫০০ টাকা হলে তোলা যাবে।");
+        else { let n = prompt("বিকাশ নাম্বার দিন:"); if(n) alert("রিকোয়েস্ট সফল!"); }
     }
 
-    function updateUI() {
-        localStorage.setItem('balance', balance);
-        localStorage.setItem('adCount', adCount);
-        document.getElementById('balance').innerText = balance;
-        document.getElementById('adCount').innerText = adCount;
+    function up() {
+        localStorage.setItem('b', b); localStorage.setItem('a', a);
+        document.getElementById('bl').innerText = b; document.getElementById('ac').innerText = a;
     }
+    up();
 </script>
-
 </body>
 </html>

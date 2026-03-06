@@ -3,120 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>মিষ্টি আম - অনলাইন ইনকাম</title>
+    <title>মিষ্টি আম - ইনকাম সাইট</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            text-align: center;
-            width: 90%;
-            max-width: 350px;
-        }
-        .logo { width: 80px; height: 80px; border-radius: 50%; margin-bottom: 10px; }
-        h1 { color: #ff6f00; margin: 10px 0; }
-        .balance-box {
-            background: #fff3e0;
-            padding: 15px;
-            border-radius: 10px;
-            border: 2px dashed #ffb74d;
-            margin-bottom: 20px;
-        }
-        .balance-amount { font-size: 26px; font-weight: bold; color: #e65100; }
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 14px;
-            margin: 12px 0;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            color: white;
-            transition: 0.3s;
-        }
-        .ad1-btn { background: #4caf50; }
-        .ad1-btn:disabled { background: #a5d6a7; cursor: not-allowed; }
-        .ad2-btn { background: #ff5722; }
-        .ad2-btn:disabled { background: #ffccbc; cursor: not-allowed; }
-        .wd-btn { background: #2196f3; }
-        .footer { font-size: 12px; color: #777; margin-top: 15px; }
-        #timer { color: red; font-weight: bold; display: none; margin-top: 10px; }
+        body { font-family: 'Arial', sans-serif; background-color: #fce4ec; text-align: center; margin: 0; padding: 20px; }
+        .container { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+        .logo { width: 80px; }
+        h1 { color: #e65100; margin: 10px 0; }
+        .balance-box { border: 2px dashed #ffb74d; padding: 15px; border-radius: 15px; background: #fff8e1; margin: 20px 0; }
+        .amount { font-size: 30px; font-weight: bold; color: #e65100; }
+        button { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .ad-btn { background-color: #4caf50; color: white; }
+        .ad-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+        .withdraw-btn { background-color: #1e88e5; color: white; }
+        .refer-box { margin-top: 20px; padding: 10px; background: #f1f8e9; border-radius: 10px; font-size: 14px; }
+        #timerText { color: #d32f2f; font-weight: bold; margin-top: 5px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <img src="https://img.icons8.com/color/96/mango.png" alt="Logo" class="logo">
+    <img src="https://cdn-icons-png.flaticon.com/512/3137/3137044.png" alt="Mango" class="logo">
     <h1>মিষ্টি আম 💰</h1>
     
     <div class="balance-box">
-        <p>আপনার বর্তমান ব্যালেন্স</p>
-        <div class="balance-amount"><span id="balance">৫০</span> ৳</div>
+        <div>আপনার বর্তমান ব্যালেন্স</div>
+        <div class="amount"><span id="balance">0</span> ৳</div>
+        <div style="margin-top: 10px;">আজকের অ্যাড: <span id="adCount">0</span>/10</div>
     </div>
 
-    <button id="btn1" class="btn ad1-btn" onclick="startAd('https://omg10.com/4/10678359', 'btn1')">📺 অ্যাড ১ (৫৳)</button>
-    
-    <button id="btn2" class="btn ad2-btn" onclick="startAd('https://omg10.com/4/10677665', 'btn2')">📺 অ্যাড ২ (৫৳)</button>
-    
-    <div id="timer">অপেক্ষা করুন: <span id="count">৫</span> সেকেন্ড</div>
+    <button id="adBtn" class="ad-btn" onclick="showAd()">📺 অ্যাড দেখুন (৫৳)</button>
+    <p id="timerText" style="display:none;">পরবর্তী অ্যাড <span id="timer">5</span> সেকেন্ড পর...</p>
 
-    <button class="btn wd-btn" onclick="withdraw()">💳 টাকা তুলুন (Withdraw)</button>
+    <button class="withdraw-btn" onclick="withdraw()">💳 টাকা তুলুন (Withdraw)</button>
 
-    <p class="footer">মিনিমাম উইথড্র ৫০০ টাকা</p>
+    <div class="refer-box">
+        <strong>🎁 রেফার বোনাস:</strong><br>
+        বন্ধুকে রেফার করলেই ১০৳ বোনাস!<br>
+        <button onclick="referFriend()" style="padding: 5px; margin-top: 5px; background: #81c784; width: auto; color: white;">রেফার লিঙ্ক কপি করুন</button>
+    </div>
 </div>
 
 <script>
-    let currentBalance = 50;
+    // আপনার দেওয়া অ্যাড লিঙ্ক দুটি এখানে সেট করা হয়েছে
+    const adLinks = [
+        "https://omg10.com/4/10677665",
+        "https://omg10.com/4/10678359"
+    ];
 
-    function startAd(adUrl, btnId) {
-        // নতুন ট্যাবে অ্যাড ওপেন হবে
-        window.open(adUrl, '_blank');
+    let balance = localStorage.getItem('balance') ? parseInt(localStorage.getItem('balance')) : 0;
+    let adCount = localStorage.getItem('adCount') ? parseInt(localStorage.getItem('adCount')) : 0;
+
+    document.getElementById('balance').innerText = balance;
+    document.getElementById('adCount').innerText = adCount;
+
+    function showAd() {
+        if (adCount >= 10) {
+            alert("আজকের ১০টি অ্যাড দেখা শেষ! কাল আবার চেষ্টা করুন।");
+            return;
+        }
+
+        let btn = document.getElementById('adBtn');
+        let timerText = document.getElementById('timerText');
+        let timerDisplay = document.getElementById('timer');
         
-        // টাইমার এবং বাটন ডিজেবল
-        document.getElementById(btnId).disabled = true;
-        document.getElementById('timer').style.display = 'block';
+        btn.disabled = true;
+        timerText.style.display = 'block';
+        
+        // পর্যায়ক্রমে আপনার লিঙ্ক দুটি ওপেন হবে
+        let currentAd = adLinks[adCount % adLinks.length];
+        window.open(currentAd, '_blank');
+
         let timeLeft = 5;
-        
-        let countdown = setInterval(function() {
+        let countdown = setInterval(() => {
             timeLeft--;
-            document.getElementById('count').innerText = timeLeft;
-            
+            timerDisplay.innerText = timeLeft;
             if (timeLeft <= 0) {
                 clearInterval(countdown);
-                document.getElementById('timer').style.display = 'none';
-                document.getElementById('count').innerText = 5;
-                document.getElementById(btnId).disabled = false;
-                
-                // ব্যালেন্স যোগ
-                currentBalance += 5;
-                document.getElementById('balance').innerText = currentBalance;
-                alert("অভিনন্দন! ৫ টাকা যোগ করা হয়েছে।");
+                balance += 5;
+                adCount += 1;
+                updateUI();
+                btn.disabled = false;
+                timerText.style.display = 'none';
+                timerDisplay.innerText = 5;
+                alert("অভিনন্দন! ৫ টাকা যোগ হয়েছে।");
             }
         }, 1000);
     }
 
     function withdraw() {
-        if (currentBalance >= 500) {
-            let num = prompt("আপনার বিকাশ/নগদ নাম্বার দিন:");
-            if(num) alert("ধন্যবাদ! রিকোয়েস্ট জমা হয়েছে।");
+        if (balance < 500) {
+            alert("মিনিমাম ৫০০ টাকা হলে উইথড্র করতে পারবেন।");
         } else {
-            alert("কমপক্ষে ৫০০ টাকা লাগবে।");
+            let num = prompt("আপনার বিকাশ বা নগদ নাম্বার দিন:");
+            if (num) {
+                alert("উইথড্র রিকোয়েস্ট সফল! আমরা আপনার নাম্বারে টাকা পাঠিয়ে দেব।");
+            }
         }
+    }
+
+    function referFriend() {
+        navigator.clipboard.writeText(window.location.href);
+        alert("লিঙ্ক কপি হয়েছে! বন্ধুদের পাঠিয়ে ইনকাম করুন।");
+        
+        let confirmRefer = confirm("বন্ধু কি জয়েন করেছে? করলে ১০৳ বোনাস নিতে OK চাপুন।");
+        if (confirmRefer) {
+            balance += 10;
+            updateUI();
+            alert("১০ টাকা রেফার বোনাস যোগ হয়েছে!");
+        }
+    }
+
+    function updateUI() {
+        localStorage.setItem('balance', balance);
+        localStorage.setItem('adCount', adCount);
+        document.getElementById('balance').innerText = balance;
+        document.getElementById('adCount').innerText = adCount;
     }
 </script>
 
 </body>
-  </html>
-  
+</html>

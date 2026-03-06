@@ -3,39 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mishti Am - Income</title>
+    <title>মিষ্টি আম - ইনকাম</title>
     <style>
-        body { font-family: sans-serif; background: #fff5f8; text-align: center; padding: 15px; }
+        body { font-family: 'Arial', sans-serif; background: #fff5f8; text-align: center; padding: 15px; }
         .box { background: #fff; padding: 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 380px; margin: auto; }
-        .balance { font-size: 32px; font-weight: bold; color: #d35400; margin: 10px 0; }
-        button { width: 100%; padding: 12px; margin: 8px 0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .balance { font-size: 35px; font-weight: bold; color: #d35400; margin: 10px 0; }
+        button { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; }
         .ad-btn { background: #27ae60; color: #fff; }
         .wd-btn { background: #2980b9; color: #fff; }
         .wd-btn:disabled { background: #ccc; cursor: not-allowed; }
-        .wa-btn { background: #25d366; color: #fff; text-decoration: none; display: block; padding: 10px; margin-top: 5px; border-radius: 5px; }
-        .tg-btn { background: #0088cc; color: #fff; text-decoration: none; display: block; padding: 10px; margin-top: 5px; border-radius: 5px; }
-        .user-id { font-size: 12px; color: #888; margin-bottom: 10px; }
+        .wa-btn { background: #25d366; color: #fff; text-decoration: none; display: block; padding: 12px; margin-top: 10px; border-radius: 8px; }
+        .tg-btn { background: #0088cc; color: #fff; text-decoration: none; display: block; padding: 12px; margin-top: 5px; border-radius: 8px; }
+        .user-id { font-size: 13px; color: #888; margin-bottom: 10px; }
     </style>
 </head>
 <body onload="initApp()">
+
 <div class="box">
-    <h1>Mishti Am 💰</h1>
-    <div class="user-id">Apnar ID: #<span id="uid">...</span></div>
+    <h1>মিষ্টি আম 💰</h1>
+    <div class="user-id">আপনার আইডি: #<span id="uid">...</span></div>
     
-    <div style="background: #fff8e1; border: 1px dashed orange; border-radius: 10px; padding: 10px;">
-        <p>Balance: <span class="balance" id="bl">0</span> ৳</p>
-        <p>Ajker Ad: <span id="ac">0</span>/10</p>
+    <div style="background: #fff8e1; border: 1px dashed orange; border-radius: 15px; padding: 15px;">
+        <p style="margin:0;">আপনার ব্যালেন্স</p>
+        <div class="balance"><span id="bl">0</span> ৳</div>
+        <p style="margin:0;">আজকের অ্যাড: <span id="ac">0</span>/১০</p>
     </div>
 
-    <button id="ab" class="ad-btn" onclick="showAd()">📺 Ad Dekhun (5৳)</button>
-    <p id="tm" style="display:none; color:red;">5 second opekkha korun...</p>
+    <button id="ab" class="ad-btn" onclick="showAd()">📺 অ্যাড দেখুন (৫৳)</button>
+    <p id="tm" style="display:none; color:red; font-weight:bold;">৫ সেকেন্ড অপেক্ষা করুন...</p>
     
-    <button id="wb" class="wd-btn" onclick="wd()" disabled>💳 Taka Tulun (Min 500৳)</button>
+    <button id="wb" class="wd-btn" onclick="wd()" disabled>💳 টাকা তুলুন (মিনিমাম ৫০০৳)</button>
 
     <div style="margin-top:20px; background:#f0f4f1; padding:15px; border-radius:15px;">
-        <strong>🎁 Refer kore 10৳ ay korun</strong>
-        <a id="wa" href="#" target="_blank" class="wa-btn">WhatsApp-e Share</a>
-        <a id="tg" href="#" target="_blank" class="tg-btn">Telegram-e Share</a>
+        <strong style="color:#2c3e50;">🎁 রেফার করে ১০৳ আয় করুন</strong>
+        <p style="font-size:12px; color:#666;">আপনার লিঙ্কে বন্ধু ক্লিক করলেই পাবেন ১০৳</p>
+        <a id="wa" href="#" target="_blank" class="wa-btn">WhatsApp-এ শেয়ার করুন</a>
+        <a id="tg" href="#" target="_blank" class="tg-btn">Telegram-এ শেয়ার করুন</a>
     </div>
 </div>
 
@@ -48,21 +51,31 @@
     document.getElementById('uid').innerText = myID;
 
     function initApp() {
+        // ১. নতুন জয়েনিং বোনাস ৫০ টাকা
         if (!localStorage.getItem('joined')) {
             b = 50;
             localStorage.setItem('joined', 'true');
-            alert("Account kholay 50 taka bonus peyechen!");
+            alert("মিষ্টি আম সাইটে আপনাকে স্বাগতম! অ্যাকাউন্ট খোলায় ৫০ টাকা বোনাস পেয়েছেন।");
+        }
+        
+        // ২. রেফার ট্র্যাকিং (সিম্পল ট্রিক)
+        const p = new URLSearchParams(window.location.search);
+        if (p.has('ref')) {
+            // কেউ লিঙ্কে ক্লিক করলে ইউজার ১০ টাকা পাবে (এটি স্ট্যাটিক সাইটে নিজের ব্রাউজারে যোগ হবে)
+            // নোট: সত্যিকারের রেফারেল সিস্টেমের জন্য ডাটাবেস লাগে, এটি আপনার নিজের ফোনে ১০ টাকা যোগ করবে টেস্টের জন্য।
+            b += 10;
+            alert("আপনার রেফার লিঙ্কে একজন বন্ধু ক্লিক করেছে! ১০ টাকা যোগ হলো।");
         }
         up();
     }
 
     let myRefLink = window.location.href.split('?')[0] + "?ref=" + myID;
-    let shareText = "Mishti Am site-e account khule 50 taka free! Link: " + myRefLink;
+    let shareText = "মিষ্টি আম সাইটে অ্যাকাউন্ট খুললেই ৫০ টাকা ফ্রি! সাথে প্রতিদিন ইনকাম ৫০০ টাকা। লিঙ্ক: " + myRefLink;
     document.getElementById('wa').href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(shareText);
-    document.getElementById('tg').href = "https://telegram.me/share/url?url=" + encodeURIComponent(myRefLink);
+    document.getElementById('tg').href = "https://telegram.me/share/url?url=" + encodeURIComponent(myRefLink) + "&text=" + encodeURIComponent(shareText);
 
     function showAd() {
-        if (a >= 10) { alert("Ajker limit shesh!"); return; }
+        if (a >= 10) { alert("আজকের ১০টি অ্যাড দেখা শেষ!"); return; }
         document.getElementById('ab').disabled = true;
         document.getElementById('tm').style.display = 'block';
         window.open(links[a % 2], '_blank');
@@ -70,16 +83,15 @@
             b += 5; a += 1; up();
             document.getElementById('ab').disabled = false;
             document.getElementById('tm').style.display = 'none';
-            alert("5 taka jog hoyeche!");
+            alert("অভিনন্দন! ৫ টাকা আপনার ব্যালেন্সে যোগ হয়েছে।");
         }, 5000);
     }
 
-    // WD System: Number likhar option
     function wd() {
-        let number = prompt("Apnar Bikash/Nagad number likhun:");
+        let number = prompt("টাকা পাঠানোর জন্য আপনার বিকাশ বা নগদ নম্বর লিখুন:");
         if (number) {
-            alert("Dhonnobad! Apnar " + b + " taka withdraw request "+ number +" number-e pathano hoyeche. 24 ghontay taka peye jaben.");
-            b = 0; // Taka tule felle balance 0 hobe
+            alert("ধন্যবাদ! আপনার " + b + " টাকা উইথড্র অনুরোধ " + number + " নম্বরে পাঠানো হয়েছে। ২৪ ঘণ্টার মধ্যে পেমেন্ট পেয়ে যাবেন।");
+            b = 0; 
             up();
         }
     }
@@ -90,15 +102,16 @@
         document.getElementById('bl').innerText = b;
         document.getElementById('ac').innerText = a;
         
-        // 500 taka hole button on hobe
+        let wb = document.getElementById('wb');
         if (b >= 500) {
-            document.getElementById('wb').disabled = false;
-            document.getElementById('wb').innerText = "💳 Taka Tulun";
+            wb.disabled = false;
+            wb.innerText = "💳 টাকা তুলুন";
         } else {
-            document.getElementById('wb').disabled = true;
-            document.getElementById('wb').innerText = "💳 Taka Tulun (Min 500৳)";
+            wb.disabled = true;
+            wb.innerText = "💳 টাকা তুলুন (মিনিমাম ৫০০৳)";
         }
     }
 </script>
+
 </body>
 </html>

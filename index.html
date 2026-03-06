@@ -3,66 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>মিষ্টি আম - ইনকাম</title>
+    <title>Mishti Am - Income</title>
     <style>
         body { font-family: sans-serif; background: #fff5f8; text-align: center; padding: 15px; }
         .box { background: #fff; padding: 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 380px; margin: auto; }
         .balance { font-size: 32px; font-weight: bold; color: #d35400; margin: 10px 0; }
         button { width: 100%; padding: 12px; margin: 8px 0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .ad-btn { background: #27ae60; color: #fff; }
+        .wd-btn { background: #2980b9; color: #fff; }
+        .wd-btn:disabled { background: #ccc; cursor: not-allowed; }
         .wa-btn { background: #25d366; color: #fff; text-decoration: none; display: block; padding: 10px; margin-top: 5px; border-radius: 5px; }
         .tg-btn { background: #0088cc; color: #fff; text-decoration: none; display: block; padding: 10px; margin-top: 5px; border-radius: 5px; }
+        .user-id { font-size: 12px; color: #888; margin-bottom: 10px; }
     </style>
 </head>
-<body onload="checkBonus()">
+<body onload="initApp()">
 <div class="box">
-    <h1>মিষ্টি আম 💰</h1>
+    <h1>Mishti Am 💰</h1>
+    <div class="user-id">Apnar ID: #<span id="uid">...</span></div>
+    
     <div style="background: #fff8e1; border: 1px dashed orange; border-radius: 10px; padding: 10px;">
-        <p>ব্যালেন্স: <span class="balance" id="bl">0</span> ৳</p>
-        <p>আজকের অ্যাড: <span id="ac">0</span>/10</p>
+        <p>Balance: <span class="balance" id="bl">0</span> ৳</p>
+        <p>Ajker Ad: <span id="ac">0</span>/10</p>
     </div>
-    <button id="ab" class="ad-btn" onclick="showAd()">📺 অ্যাড দেখুন (৫৳)</button>
-    <p id="tm" style="display:none; color:red;">৫ সেকেন্ড অপেক্ষা করুন...</p>
-    <button style="background: #2980b9; color:#fff;" onclick="wd()">💳 টাকা তুলুন</button>
-    <div style="margin-top:20px; background:#f0f4f1; padding:10px; border-radius:10px;">
-        <strong>🎁 রেফার বোনাস (১০৳)</strong>
-        <a id="wa" href="#" class="wa-btn">WhatsApp-এ শেয়ার</a>
-        <a id="tg" href="#" class="tg-btn">Telegram-এ শেয়ার</a>
+
+    <button id="ab" class="ad-btn" onclick="showAd()">📺 Ad Dekhun (5৳)</button>
+    <p id="tm" style="display:none; color:red;">5 second opekkha korun...</p>
+    
+    <button id="wb" class="wd-btn" onclick="wd()" disabled>💳 Taka Tulun (Min 500৳)</button>
+
+    <div style="margin-top:20px; background:#f0f4f1; padding:15px; border-radius:15px;">
+        <strong>🎁 Refer kore 10৳ ay korun</strong>
+        <a id="wa" href="#" target="_blank" class="wa-btn">WhatsApp-e Share</a>
+        <a id="tg" href="#" target="_blank" class="tg-btn">Telegram-e Share</a>
     </div>
 </div>
 
 <script>
     const links = ["https://omg10.com/4/10677665", "https://omg10.com/4/10678359"];
-    
-    // ব্যালেন্স লোড করা
     let b = localStorage.getItem('b') ? parseInt(localStorage.getItem('b')) : 0;
     let a = localStorage.getItem('a') ? parseInt(localStorage.getItem('a')) : 0;
+    let myID = localStorage.getItem('myID') || Math.floor(100000 + Math.random() * 900000);
+    localStorage.setItem('myID', myID);
+    document.getElementById('uid').innerText = myID;
 
-    function checkBonus() {
-        // নতুন অ্যাকাউন্ট খুললে ৫০ টাকা ফ্রি
+    function initApp() {
         if (!localStorage.getItem('joined')) {
             b = 50;
             localStorage.setItem('joined', 'true');
-            up();
-            alert("অ্যাকাউন্ট খোলার জন্য ৫০ টাকা বোনাস পেয়েছেন!");
+            alert("Account kholay 50 taka bonus peyechen!");
         }
-        
-        // রেফার লিঙ্ক চেক (যে রেফার করেছে তার জন্য ১০ টাকা)
-        const p = new URLSearchParams(window.location.search);
-        if (p.has('ref')) {
-            // সত্যিকারের সার্ভার ছাড়া রেফারারকে টাকা দেওয়া কঠিন, 
-            // তাই এটি একটি ডেমো পপআপ দেখাবে।
-            alert("আপনি বন্ধুর রেফারে জয়েন করেছেন!");
-        }
+        up();
     }
 
-    // রেফার লিঙ্ক তৈরি
-    let refL = window.location.href.split('?')[0] + "?ref=" + Math.floor(Math.random() * 1000);
-    document.getElementById('wa').href = "https://api.whatsapp.com/send?text=একাউন্ট খুললেই ৫০ টাকা ফ্রি! লিঙ্কে ক্লিক করো: " + refL;
-    document.getElementById('tg').href = "https://telegram.me/share/url?url=" + refL + "&text=৫০ টাকা বোনাস নিন!";
+    let myRefLink = window.location.href.split('?')[0] + "?ref=" + myID;
+    let shareText = "Mishti Am site-e account khule 50 taka free! Link: " + myRefLink;
+    document.getElementById('wa').href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(shareText);
+    document.getElementById('tg').href = "https://telegram.me/share/url?url=" + encodeURIComponent(myRefLink);
 
     function showAd() {
-        if (a >= 10) { alert("আজকের লিমিট শেষ!"); return; }
+        if (a >= 10) { alert("Ajker limit shesh!"); return; }
         document.getElementById('ab').disabled = true;
         document.getElementById('tm').style.display = 'block';
         window.open(links[a % 2], '_blank');
@@ -70,20 +70,35 @@
             b += 5; a += 1; up();
             document.getElementById('ab').disabled = false;
             document.getElementById('tm').style.display = 'none';
-            alert("৫ টাকা যোগ হয়েছে!");
+            alert("5 taka jog hoyeche!");
         }, 5000);
     }
 
+    // WD System: Number likhar option
     function wd() {
-        if (b < 500) alert("৫০০ টাকা হলে তোলা যাবে।");
-        else { let n = prompt("বিকাশ নাম্বার দিন:"); if(n) alert("রিকোয়েস্ট সফল!"); }
+        let number = prompt("Apnar Bikash/Nagad number likhun:");
+        if (number) {
+            alert("Dhonnobad! Apnar " + b + " taka withdraw request "+ number +" number-e pathano hoyeche. 24 ghontay taka peye jaben.");
+            b = 0; // Taka tule felle balance 0 hobe
+            up();
+        }
     }
 
     function up() {
-        localStorage.setItem('b', b); localStorage.setItem('a', a);
-        document.getElementById('bl').innerText = b; document.getElementById('ac').innerText = a;
+        localStorage.setItem('b', b);
+        localStorage.setItem('a', a);
+        document.getElementById('bl').innerText = b;
+        document.getElementById('ac').innerText = a;
+        
+        // 500 taka hole button on hobe
+        if (b >= 500) {
+            document.getElementById('wb').disabled = false;
+            document.getElementById('wb').innerText = "💳 Taka Tulun";
+        } else {
+            document.getElementById('wb').disabled = true;
+            document.getElementById('wb').innerText = "💳 Taka Tulun (Min 500৳)";
+        }
     }
-    up();
 </script>
 </body>
 </html>

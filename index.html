@@ -24,20 +24,28 @@
         const auth = firebase.auth();
         const analytics = firebase.analytics();
 
-        // ইউজার সাইটে ঢুকলে অ্যানালিটিক্সে ডাটা পাঠাবে
         auth.signInAnonymously().then(() => {
             analytics.logEvent('user_joined', { id: localStorage.getItem('myID') });
         });
     </script>
 
     <style>
-        body { font-family: 'Arial', sans-serif; background: #fff5f8; text-align: center; padding: 10px; }
+        body { font-family: 'Arial', sans-serif; background: #fff5f8; text-align: center; padding: 10px; margin-bottom: 50px; }
         .box { background: #fff; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
         .balance-card { background: #fff8e1; border: 2px solid orange; border-radius: 15px; padding: 15px; margin-bottom: 15px; }
         .balance { font-size: 30px; font-weight: bold; color: #d35400; }
         .ad-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .ad-btn { background: #27ae60; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .ad-btn:disabled { background: #bdc3c7; }
+        
+        /* উইথড্র সেকশন */
+        .wd-section { background: #f9f9f9; padding: 15px; border-radius: 15px; margin-top: 20px; border: 1px solid #ddd; }
+        select, input { width: 90%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; }
+        .wd-btn { background: #2980b9; color: #fff; width: 100%; padding: 15px; margin-top: 10px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .wd-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        .sticky-footer { margin-top: 20px; background: #fff0f0; padding: 12px; border-radius: 15px; border: 2px solid #ff4d4d; }
+        .tg-link { background: #0088cc; color: #fff; text-decoration: none; display: block; padding: 10px; margin-top: 8px; border-radius: 8px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -47,11 +55,27 @@
     <div class="balance-card">
         <p style="margin:0;">মোট ব্যালেন্স</p>
         <div class="balance"><span id="bl">0</span> ৳</div>
-        <p style="margin:0; font-size: 12px;">আইডি: #<span id="uid">...</span></p>
+        <p style="margin:0; font-size: 12px; color: #666;">আইডি: #<span id="uid">...</span></p>
     </div>
 
     <strong>📺 আজকের ১০টি অ্যাড:</strong>
     <div id="adGrid" class="ad-grid"></div>
+
+    <div class="wd-section">
+        <strong>💳 টাকা তুলুন</strong>
+        <select id="method">
+            <option value="bkash">বিকাশ (bKash)</option>
+            <option value="nagad">নগদ (Nagad)</option>
+        </select>
+        <input type="number" id="wdNumber" placeholder="পার্সোনাল নম্বর দিন">
+        <input type="number" id="wdAmount" placeholder="টাকার পরিমাণ (মিনিমাম ৫০০)">
+        <button id="wb" class="wd-btn" onclick="processWD()" disabled>টাকা উত্তোলন করুন</button>
+    </div>
+
+    <div class="sticky-footer">
+        <p style="font-size:13px; color:#d32f2f; font-weight:bold;">⚠️ পেমেন্ট পেতে আপনার ৫ জন বন্ধুকে আমাদের টেলিগ্রাম চ্যানেলে শেয়ার করুন।</p>
+        <a href="https://t.me/mistiam5" target="_blank" class="tg-link">চ্যানেলে জয়েন করুন</a>
+    </div>
 </div>
 
 <script>
@@ -74,7 +98,7 @@
         for (let i = 0; i < 10; i++) {
             const btn = document.createElement('button');
             btn.className = 'ad-btn';
-            btn.innerText = `অ্যাড ${i + 1}`;
+            btn.innerText = `অ্যাড ${i + 1} (৫৳)`;
             if (localStorage.getItem(`ad_${i}`) === today) { btn.disabled = true; btn.innerText = "শেষ ✅"; }
             btn.onclick = () => {
                 window.open(adLinks[i], '_blank');
@@ -88,8 +112,22 @@
             grid.appendChild(btn);
         }
         document.getElementById('bl').innerText = b;
+        document.getElementById('wb').disabled = (b < 500);
+    }
+
+    function processWD() {
+        const amount = document.getElementById('wdAmount').value;
+        if (amount < 500) {
+            alert("মিনিমাম ৫০০ টাকা হতে হবে।");
+            return;
+        }
+        alert(`সফল! আপনার পেমেন্ট রিকোয়েস্ট পাঠানো হয়েছে। ৫ জন বন্ধুকে শেয়ারের স্ক্রিনশট চ্যানেলে দিন।`);
+        b -= amount;
+        localStorage.setItem('b', b);
+        location.reload();
     }
     createButtons();
 </script>
 </body>
-</html>
+    </html>
+    

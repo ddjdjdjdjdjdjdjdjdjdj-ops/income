@@ -97,7 +97,6 @@
         });
     }
 
-    // বটের লিঙ্ক রেফারেল আইডি সহ শেয়ার হবে
     function shareWhatsApp() {
         const text = `মিষ্টি আম বত-এ জয়েন করে ইনকাম করুন! আমার রেফারেল আইডি: ${myID}\nলিঙ্ক: ${botLink}`;
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
@@ -113,7 +112,7 @@
             b += 10;
             updateBalance();
             localStorage.setItem('joined', 'true');
-            sendTelegramMessage(`🎁 ইউজার #${myID} চ্যানেলে জয়েন করে ১০৳ বোনাস নিয়েছে!`);
+            sendTelegramMessage(`🎁 <b>Join Bonus!</b>\nইউজার #${myID} চ্যানেলে জয়েন করে ১০৳ বোনাস নিয়েছে!`);
             alert("অভিনন্দন! ১০ টাকা যোগ হয়েছে।");
             location.reload();
         }
@@ -129,9 +128,9 @@
         const method = document.getElementById('method').value;
         const num = document.getElementById('wdNumber').value;
         if(!num) { alert("নম্বর দিন!"); return; }
-        const text = `💰 <b>Withdraw!</b>\nID: #${myID}\nমেথড: ${method}\nনম্বর: ${num}\nপরিমাণ: ${b}৳`;
+        const text = `💰 <b>উইথড্র রিকোয়েস্ট!</b>\nআইডি: #${myID}\nমেথড: ${method}\nনম্বর: ${num}\nপরিমাণ: ${b}৳`;
         sendTelegramMessage(text);
-        alert("টেলিগ্রামে পাঠানো হয়েছে!");
+        alert("টেলিগ্রামে রিকোয়েস্ট পাঠানো হয়েছে!");
         b = 0; updateBalance(); location.reload();
     }
 
@@ -160,4 +159,5 @@
     createButtons();
 </script>
 </body>
-</html>
+        </html>
+            rere

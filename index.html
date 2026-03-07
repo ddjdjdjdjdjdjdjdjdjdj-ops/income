@@ -3,12 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>মিষ্টি আম - ইনকাম</title>
+    <title>Misti Am - Income</title>
+    
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWhYvIKGHfDO4NrH0G5N692FljzD_wmZc",
+            authDomain: "misti-am.firebaseapp.com",
+            projectId: "misti-am",
+            databaseURL: "https://misti-am-default-rtdb.firebaseio.com",
+            appId: "1:335857181187:web:ce34124f9daea3a4262436"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
 
     <style>
-        body { font-family: 'Arial', sans-serif; background: #fff5f8; text-align: center; padding: 10px; margin-bottom: 50px; color: #333; }
+        body { font-family: 'Arial', sans-serif; background: #fff5f8; text-align: center; padding: 10px; color: #333; }
         .box { background: #fff; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
         .balance-card { background: #fff8e1; border: 2px solid orange; border-radius: 15px; padding: 15px; margin-bottom: 15px; }
         .balance { font-size: 32px; font-weight: bold; color: #d35400; }
@@ -16,57 +29,43 @@
         .ad-btn { background: #27ae60; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .ad-btn:disabled { background: #bdc3c7; cursor: not-allowed; }
         .action-section { background: #f0f7ff; padding: 15px; border-radius: 15px; margin-top: 20px; border: 1px solid #2196f3; }
-        select, input { width: 90%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; }
         .wd-btn { background: #2980b9; color: #fff; width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .wd-btn:disabled { background: #bdc3c7; color: #666; cursor: not-allowed; }
-        .support-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .sup-btn { text-decoration: none; color: #fff; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 14px; }
+        .share-btn { text-decoration: none; color: #fff; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 14px; display: block; cursor: pointer; margin-top: 10px; width: 100%; border: none; }
     </style>
 </head>
 <body>
 
 <div class="box">
-    <h1>মিষ্টি আম 🥭💰</h1>
+    <h1>Misti Am 🥭💰</h1>
     <div class="balance-card">
-        <p style="margin:0;">মোট ব্যালেন্স</p>
+        <p style="margin:0;">Mot Balance</p>
         <div class="balance"><span id="bl">0</span> ৳</div>
-        <p style="margin:0; font-size: 12px; color: #666;">আইডি: #<span id="uid">...</span></p>
+        <p style="margin:0; font-size: 12px; color: #666;">ID: #<span id="uid">...</span></p>
     </div>
 
-    <strong>📺 আজকের ১০টি অ্যাড:</strong>
+    <strong>📺 Ajker 10-ti Ad:</strong>
     <div id="adGrid" class="ad-grid"></div>
 
     <div class="action-section">
-        <strong>📢 রেফার করে ১০৳ ইনকাম</strong>
-        <p style="font-size: 11px; margin: 5px 0;">রেফার লিঙ্কে কেউ জয়েন করলেই পাবেন ১০৳ বোনাস!</p>
-        <button class="wd-btn" style="background: #2196f3;" onclick="copyRef()">রেফার লিঙ্ক কপি করুন</button>
+        <strong>📢 Refer & Share (10৳)</strong>
+        <button onclick="shareWhatsApp()" class="share-btn" style="background: #25d366;">WhatsApp Share</button>
+        <button onclick="shareTelegram()" class="share-btn" style="background: #0088cc;">Telegram Share</button>
     </div>
 
     <div class="action-section" id="joinSection" style="background: #fff0f0; border-color: #ff4d4d;">
-        <strong>🎁 জয়েন বোনাস ১০৳</strong>
-        <a href="https://t.me/mistiam5" target="_blank" style="background:#0088cc;" class="sup-btn" onclick="giveJoinBonus()">চ্যানেলে জয়েন করে বোনাস নিন</a>
+        <strong>🎁 Join Bonus 10৳</strong>
+        <a href="https://t.me/mistiam5" target="_blank" class="share-btn" style="background:#0088cc;" onclick="giveJoinBonus()">Channel-e Join Kore 10৳ Nin</a>
     </div>
 
     <div class="action-section">
-        <strong>💳 টাকা উত্তোলন (উইথড্র)</strong>
-        <p style="font-size: 11px; color: #d32f2f;">মিনিমাম ৫০০ টাকা হলে বাটন চালু হবে।</p>
-        <select id="method">
-            <option value="bKash">বিকাশ (Personal)</option>
-            <option value="Nagad">নগদ (Personal)</option>
-        </select>
-        <input type="number" id="wdNumber" placeholder="নম্বর দিন">
-        <input type="number" id="wdAmount" placeholder="টাকার পরিমাণ">
-        <button id="wb" class="wd-btn" onclick="processWD()" disabled>টাকা উত্তোলন করুন</button>
-    </div>
-
-    <div class="support-grid">
-        <a href="https://wa.me/YOUR_NUMBER" class="sup-btn" style="background: #25d366;">WhatsApp সাপোর্ট</a>
-        <a href="https://t.me/mistiam5" class="sup-btn" style="background: #0088cc;">Telegram চ্যানেল</a>
+        <strong>💳 Withdrawal</strong>
+        <input type="number" id="wdNumber" placeholder="Number din" style="width:90%; padding:10px; margin-top:5px; border-radius: 8px; border: 1px solid #ccc;">
+        <button id="wb" class="wd-btn" onclick="processWD()" disabled>Withdraw (Min 500৳)</button>
     </div>
 </div>
 
 <script>
-    // আপনার বটের তথ্য
     const botToken = "7763993767:AAF8_u_Hq43Yc67sHk7H4mk3EkFIF8NFLFw";
     const chatID = "7621146681"; 
 
@@ -82,45 +81,42 @@
     localStorage.setItem('myID', myID);
     document.getElementById('uid').innerText = myID;
 
-    // রেফারেল চেক ও টেলিগ্রাম নোটিফিকেশন
-    const urlParams = new URLSearchParams(window.location.search);
-    const refBy = urlParams.get('ref');
-    if (refBy && !localStorage.getItem('refUsed')) {
-        const msg = `🎊 অভিনন্দন! আপনার রেফারেল #${myID} সাইটে জয়েন করেছে। ১০৳ অ্যাড করে দিন।`;
-        fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent(msg)}`);
-        localStorage.setItem('refUsed', 'true');
+    const refLink = `https://ddjdjdjdjdjdjdjdjdjdj-ops.github.io/income/?ref=${myID}`;
+
+    function shareWhatsApp() {
+        window.open(`https://wa.me/?text=${encodeURIComponent("Join korun ar 10tk bonus nin: " + refLink)}`);
+    }
+
+    function shareTelegram() {
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent("Misti Am - Income Bot!")}`);
     }
 
     function giveJoinBonus() {
         if (!localStorage.getItem('joined')) {
             b += 10;
-            localStorage.setItem('b', b);
+            updateBalance();
             localStorage.setItem('joined', 'true');
-            alert("১০ টাকা জয়েন বোনাস যোগ হয়েছে!");
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent("🎁 User #"+myID+" channel-e join kore 10tk bonus niyeche!")}`);
+            alert("10 tk bonus add hoyeche!");
             location.reload();
         }
     }
 
-    function copyRef() {
-        const link = `https://ddjdjdjdjdjdjdjdjdjdj-ops.github.io/income/?ref=${myID}`;
-        navigator.clipboard.writeText(link);
-        alert("আপনার রেফার লিঙ্ক কপি হয়েছে!");
+    function updateBalance() {
+        localStorage.setItem('b', b);
+        document.getElementById('bl').innerText = b;
+        document.getElementById('wb').disabled = (b < 500);
     }
 
     function processWD() {
-        const method = document.getElementById('method').value;
         const num = document.getElementById('wdNumber').value;
-        const am = document.getElementById('wdAmount').value;
-        if (!num || am < 500 || b < am) {
-            alert("সঠিক তথ্য দিন। ব্যালেন্স চেক করুন।");
-            return;
-        }
-        const text = `💰 উইথড্র রিকোয়েস্ট!\nআইডি: #${myID}\nমেথড: ${method}\nনম্বর: ${num}\nপরিমাণ: ${am} ৳`;
+        if(!num) { alert("Number din!"); return; }
+        const text = `💰 New Withdraw Request!\nID: #${myID}\nNumber: ${num}\nAmount: ${b} ৳`;
         fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent(text)}`)
         .then(() => {
-            alert("রিকোয়েস্ট আপনার টেলিগ্রামে পাঠানো হয়েছে!");
-            b -= am;
-            localStorage.setItem('b', b);
+            alert("Request Telegram-e pathano hoyeche!");
+            b = 0;
+            updateBalance();
             location.reload();
         });
     }
@@ -131,21 +127,20 @@
         for (let i = 0; i < 10; i++) {
             const btn = document.createElement('button');
             btn.className = 'ad-btn';
-            btn.innerText = `অ্যাড ${i + 1}`;
-            if (localStorage.getItem(`ad_${i}`) === today) { btn.disabled = true; btn.innerText = "শেষ ✅"; }
+            btn.innerText = `Ad ${i + 1}`;
+            if (localStorage.getItem(`ad_${i}`) === today) { btn.disabled = true; btn.innerText = "Done ✅"; }
             btn.onclick = () => {
                 window.open(adLinks[i], '_blank');
                 setTimeout(() => {
                     b += 5;
                     localStorage.setItem(`ad_${i}`, today);
-                    localStorage.setItem('b', b);
+                    updateBalance();
                     location.reload();
                 }, 5000);
             };
             grid.appendChild(btn);
         }
-        document.getElementById('bl').innerText = b;
-        if (b >= 500) document.getElementById('wb').disabled = false;
+        updateBalance();
         if(localStorage.getItem('joined')) document.getElementById('joinSection').style.display = 'none';
     }
     createButtons();

@@ -7,16 +7,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBWhYvIKGHfDO4NrH0G5N692FljzD_wmZc",
-            authDomain: "misti-am.firebaseapp.com",
-            projectId: "misti-am",
-            appId: "1:335857181187:web:ce34124f9daea3a4262436"
-        };
-        firebase.initializeApp(firebaseConfig);
-    </script>
-
     <style>
         body { font-family: 'Arial', sans-serif; background: #fff5f8; text-align: center; padding: 10px; margin-bottom: 50px; color: #333; }
         .box { background: #fff; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
@@ -26,10 +16,11 @@
         .ad-btn { background: #27ae60; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .ad-btn:disabled { background: #bdc3c7; cursor: not-allowed; }
         .action-section { background: #f0f7ff; padding: 15px; border-radius: 15px; margin-top: 20px; border: 1px solid #2196f3; }
-        select, input { width: 90%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #ccc; }
+        select, input { width: 90%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; }
         .wd-btn { background: #2980b9; color: #fff; width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .wd-btn:disabled { background: #bdc3c7; color: #666; cursor: not-allowed; }
-        .tg-link { background: #0088cc; color: #fff; text-decoration: none; display: block; padding: 12px; margin-top: 8px; border-radius: 8px; font-weight: bold; }
+        .support-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .sup-btn { text-decoration: none; color: #fff; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -47,25 +38,30 @@
 
     <div class="action-section">
         <strong>📢 রেফার করে ১০৳ ইনকাম</strong>
-        <p style="font-size: 11px; margin: 5px 0;">বন্ধুকে ইনভাইট করলেই পাবেন ১০৳ বোনাস!</p>
+        <p style="font-size: 11px; margin: 5px 0;">রেফার লিঙ্কে কেউ জয়েন করলেই পাবেন ১০৳ বোনাস!</p>
         <button class="wd-btn" style="background: #2196f3;" onclick="copyRef()">রেফার লিঙ্ক কপি করুন</button>
     </div>
 
     <div class="action-section" id="joinSection" style="background: #fff0f0; border-color: #ff4d4d;">
         <strong>🎁 জয়েন বোনাস ১০৳</strong>
-        <a href="https://t.me/mistiam5" target="_blank" class="tg-link" onclick="giveJoinBonus()">চ্যানেলে জয়েন করে বোনাস নিন</a>
+        <a href="https://t.me/mistiam5" target="_blank" style="background:#0088cc;" class="sup-btn" onclick="giveJoinBonus()">চ্যানেলে জয়েন করে বোনাস নিন</a>
     </div>
 
     <div class="action-section">
         <strong>💳 টাকা উত্তোলন (উইথড্র)</strong>
         <p style="font-size: 11px; color: #d32f2f;">মিনিমাম ৫০০ টাকা হলে বাটন চালু হবে।</p>
         <select id="method">
-            <option value="bKash">বিকাশ</option>
-            <option value="Nagad">নগদ</option>
+            <option value="bKash">বিকাশ (Personal)</option>
+            <option value="Nagad">নগদ (Personal)</option>
         </select>
         <input type="number" id="wdNumber" placeholder="নম্বর দিন">
-        <input type="number" id="wdAmount" placeholder="পরিমাণ (৫০০+)">
+        <input type="number" id="wdAmount" placeholder="টাকার পরিমাণ">
         <button id="wb" class="wd-btn" onclick="processWD()" disabled>টাকা উত্তোলন করুন</button>
+    </div>
+
+    <div class="support-grid">
+        <a href="https://wa.me/YOUR_NUMBER" class="sup-btn" style="background: #25d366;">WhatsApp সাপোর্ট</a>
+        <a href="https://t.me/mistiam5" class="sup-btn" style="background: #0088cc;">Telegram চ্যানেল</a>
     </div>
 </div>
 
@@ -74,7 +70,6 @@
     const botToken = "7763993767:AAF8_u_Hq43Yc67sHk7H4mk3EkFIF8NFLFw";
     const chatID = "7621146681"; 
 
-    // আপনার সেই ১০টি অ্যাড লিঙ্ক
     const adLinks = [
         "https://omg10.com/4/10692961", "https://omg10.com/4/10692960", "https://omg10.com/4/10692959",
         "https://omg10.com/4/10692957", "https://omg10.com/4/10692956", "https://omg10.com/4/10692955",
@@ -87,11 +82,12 @@
     localStorage.setItem('myID', myID);
     document.getElementById('uid').innerText = myID;
 
-    // রেফারেল নোটিফিকেশন
+    // রেফারেল চেক ও টেলিগ্রাম নোটিফিকেশন
     const urlParams = new URLSearchParams(window.location.search);
     const refBy = urlParams.get('ref');
     if (refBy && !localStorage.getItem('refUsed')) {
-        fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent("🎊 নতুন রেফারেল আইডি: #" + myID)}`);
+        const msg = `🎊 অভিনন্দন! আপনার রেফারেল #${myID} সাইটে জয়েন করেছে। ১০৳ অ্যাড করে দিন।`;
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent(msg)}`);
         localStorage.setItem('refUsed', 'true');
     }
 
@@ -100,7 +96,7 @@
             b += 10;
             localStorage.setItem('b', b);
             localStorage.setItem('joined', 'true');
-            alert("১০ টাকা বোনাস যোগ হয়েছে!");
+            alert("১০ টাকা জয়েন বোনাস যোগ হয়েছে!");
             location.reload();
         }
     }
@@ -108,18 +104,21 @@
     function copyRef() {
         const link = `https://ddjdjdjdjdjdjdjdjdjdj-ops.github.io/income/?ref=${myID}`;
         navigator.clipboard.writeText(link);
-        alert("লিঙ্ক কপি হয়েছে!");
+        alert("আপনার রেফার লিঙ্ক কপি হয়েছে!");
     }
 
     function processWD() {
         const method = document.getElementById('method').value;
         const num = document.getElementById('wdNumber').value;
         const am = document.getElementById('wdAmount').value;
-        if (!num || am < 500) { alert("সঠিক তথ্য দিন।"); return; }
+        if (!num || am < 500 || b < am) {
+            alert("সঠিক তথ্য দিন। ব্যালেন্স চেক করুন।");
+            return;
+        }
         const text = `💰 উইথড্র রিকোয়েস্ট!\nআইডি: #${myID}\nমেথড: ${method}\nনম্বর: ${num}\nপরিমাণ: ${am} ৳`;
         fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent(text)}`)
         .then(() => {
-            alert("রিকোয়েস্ট পাঠানো হয়েছে!");
+            alert("রিকোয়েস্ট আপনার টেলিগ্রামে পাঠানো হয়েছে!");
             b -= am;
             localStorage.setItem('b', b);
             location.reload();
@@ -135,7 +134,7 @@
             btn.innerText = `অ্যাড ${i + 1}`;
             if (localStorage.getItem(`ad_${i}`) === today) { btn.disabled = true; btn.innerText = "শেষ ✅"; }
             btn.onclick = () => {
-                window.open(adLinks[i], '_blank'); // এখানে অ্যাড লিঙ্ক কাজ করবে
+                window.open(adLinks[i], '_blank');
                 setTimeout(() => {
                     b += 5;
                     localStorage.setItem(`ad_${i}`, today);
@@ -153,4 +152,4 @@
 </script>
 </body>
             </html>
-    
+            

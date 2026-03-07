@@ -5,108 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>মিষ্টি আম - ইনকাম</title>
     <style>
-        body { font-family: 'Arial', sans-serif; background: #fff5f8; text-align: center; padding: 15px; margin-bottom: 50px; }
-        .box { background: #fff; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 380px; margin: auto; }
-        .balance { font-size: 35px; font-weight: bold; color: #d35400; margin: 10px 0; }
-        button { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; }
-        .ad-btn { background: #27ae60; color: #fff; }
-        .wd-btn { background: #2980b9; color: #fff; }
-        .wd-btn:disabled { background: #ccc; cursor: not-allowed; }
+        body { font-family: 'Arial', sans-serif; background: #fff5f8; text-align: center; padding: 10px; margin-bottom: 50px; }
+        .box { background: #fff; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+        .balance-card { background: #fff8e1; border: 2px solid orange; border-radius: 15px; padding: 15px; margin-bottom: 15px; }
+        .balance { font-size: 30px; font-weight: bold; color: #d35400; }
         
-        /* সব সময় নিচে থাকার জন্য বিশেষ বক্স */
-        .sticky-footer { 
-            margin-top: 20px; 
-            background: #fff0f0; 
-            padding: 15px; 
-            border-radius: 15px; 
-            border: 2px solid #ff4d4d; 
-        }
-        .tg-link { 
-            background: #0088cc; 
-            color: #fff; 
-            text-decoration: none; 
-            display: block; 
-            padding: 12px; 
-            margin-top: 10px; 
-            border-radius: 8px; 
-            font-weight: bold; 
-        }
-        .condition-text { 
-            font-size: 14px; 
-            color: #d32f2f; 
-            font-weight: bold; 
-            line-height: 1.6; 
-        }
-        .user-id { font-size: 13px; color: #888; margin-bottom: 10px; }
+        /* ১০টি বাটনের গ্রিড ডিজাইন */
+        .ad-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .ad-btn { background: #27ae60; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.3s; }
+        .ad-btn:disabled { background: #bdc3c7; cursor: not-allowed; opacity: 0.6; }
+        
+        .wd-btn { background: #2980b9; color: #fff; width: 100%; padding: 15px; margin-top: 20px; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; }
+        .wd-btn:disabled { background: #ccc; }
+
+        .sticky-footer { margin-top: 20px; background: #fff0f0; padding: 12px; border-radius: 15px; border: 2px solid #ff4d4d; }
+        .tg-link { background: #0088cc; color: #fff; text-decoration: none; display: block; padding: 10px; margin-top: 8px; border-radius: 8px; font-weight: bold; }
+        .condition-text { font-size: 13px; color: #d32f2f; font-weight: bold; line-height: 1.5; }
     </style>
 </head>
 <body onload="initApp()">
 
 <div class="box">
     <h1>মিষ্টি আম 💰</h1>
-    <div class="user-id">আপনার আইডি: #<span id="uid">...</span></div>
     
-    <div style="background: #fff8e1; border: 1px dashed orange; border-radius: 15px; padding: 15px;">
-        <p style="margin:0;">আপনার ব্যালেন্স</p>
+    <div class="balance-card">
+        <p style="margin:0;">আপনার মোট ব্যালেন্স</p>
         <div class="balance"><span id="bl">0</span> ৳</div>
-        <p style="margin:0;">আজকের অ্যাড: <span id="ac">0</span>/১০</p>
+        <p style="margin:0; font-size: 12px; color: #666;">ইউজার আইডি: #<span id="uid">...</span></p>
     </div>
 
-    <button id="ab" class="ad-btn" onclick="showAd()">📺 অ্যাড দেখুন (৫৳)</button>
-    <p id="tm" style="display:none; color:red; font-weight:bold;">৫ সেকেন্ড অপেক্ষা করুন...</p>
-    
+    <strong style="color: #333;">📺 আজকের ১০টি অ্যাড:</strong>
+    <div class="ad-grid" id="adGrid">
+        </div>
+
     <button id="wb" class="wd-btn" onclick="wd()" disabled>💳 টাকা তুলুন (মিনিমাম ৫০০৳)</button>
 
     <div class="sticky-footer">
-        <p class="condition-text">⚠️ বিশেষ ঘোষণা:<br>উইথড্র (WD) পেতে আপনার ৫ জন বন্ধুকে আমাদের টেলিগ্রাম চ্যানেলে শেয়ার করুন। ৫ জন জয়েন হলেই পেমেন্ট পাবেন।</p>
-        
-        <strong style="color:#0088cc;">📢 আমাদের টেলিগ্রাম চ্যানেল:</strong>
+        <p class="condition-text">⚠️ পেমেন্ট পেতে আপনার ৫ জন বন্ধুকে আমাদের টেলিগ্রাম চ্যানেলে শেয়ার করুন।</p>
         <a href="https://t.me/mistiam5" target="_blank" class="tg-link">চ্যানেলে জয়েন করুন</a>
     </div>
 </div>
 
 <script>
-    const links = ["https://omg10.com/4/10677665", "https://omg10.com/4/10678359"];
+    // আপনার দেওয়া ১০টি ইউনিক অ্যাড লিঙ্ক
+    const adLinks = [
+        "https://omg10.com/4/10692961",
+        "https://omg10.com/4/10692960",
+        "https://omg10.com/4/10692959",
+        "https://omg10.com/4/10692957",
+        "https://omg10.com/4/10692956",
+        "https://omg10.com/4/10692955",
+        "https://omg10.com/4/10692954",
+        "https://omg10.com/4/10692953",
+        "https://omg10.com/4/10677665",
+        "https://omg10.com/4/10678359"
+    ];
+
     let b = localStorage.getItem('b') ? parseInt(localStorage.getItem('b')) : 0;
-    let a = localStorage.getItem('a') ? parseInt(localStorage.getItem('a')) : 0;
     let myID = localStorage.getItem('myID') || Math.floor(100000 + Math.random() * 900000);
     localStorage.setItem('myID', myID);
     document.getElementById('uid').innerText = myID;
 
     function initApp() {
         if (!localStorage.getItem('joined')) {
-            b = 50;
+            b = 50; // জয়েনিং বোনাস ৫০ টাকা
             localStorage.setItem('joined', 'true');
-            alert("মিষ্টি আম সাইটে স্বাগতম! আপনি ৫০ টাকা বোনাস পেয়েছেন।");
         }
+        createButtons();
         up();
     }
 
-    function showAd() {
-        if (a >= 10) { alert("আজকের অ্যাড দেখার লিমিট শেষ!"); return; }
-        document.getElementById('ab').disabled = true;
-        document.getElementById('tm').style.display = 'block';
-        window.open(links[a % 2], '_blank');
-        setTimeout(() => {
-            b += 5; a += 1; up();
-            document.getElementById('ab').disabled = false;
-            document.getElementById('tm').style.display = 'none';
-        }, 5000);
+    function createButtons() {
+        const grid = document.getElementById('adGrid');
+        const today = new Date().toDateString(); // আজকের তারিখ ট্রাক করার জন্য
+        
+        for (let i = 0; i < 10; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'ad-btn';
+            btn.innerText = `অ্যাড ${i + 1} (৫৳)`;
+            
+            // বাটন আজ ক্লিক করা হয়েছে কিনা চেক
+            if (localStorage.getItem(`ad_${i}`) === today) {
+                btn.disabled = true;
+                btn.innerText = "দেখা শেষ ✅";
+            }
+
+            btn.onclick = () => {
+                window.open(adLinks[i], '_blank');
+                // ৫ সেকেন্ড ওয়েট করার পর টাকা যোগ হবে
+                setTimeout(() => {
+                    b += 5;
+                    localStorage.setItem(`ad_${i}`, today);
+                    localStorage.setItem('b', b);
+                    location.reload(); // পেজ রিফ্রেশ করে বাটন লক করা
+                }, 5000);
+            };
+            grid.appendChild(btn);
+        }
     }
 
     function wd() {
-        let num = prompt("আপনার বিকাশ বা নগদ নাম্বার দিন:");
+        let num = prompt("আপনার বিকাশ বা নগদ নম্বর দিন:");
         if (num) {
-            alert("আপনার রিকোয়েস্ট সফল! ৫ জন বন্ধুকে শেয়ার করার স্ক্রিনশট আমাদের টেলিগ্রাম চ্যানেলে জমা দিন। যাচাই শেষে ২৪ ঘণ্টায় পেমেন্ট পাবেন।");
-            b = 0; up();
+            alert("আপনার রিকোয়েস্ট গ্রহণ করা হয়েছে! ৫ জন শেয়ারের স্ক্রিনশট আমাদের টেলিগ্রাম চ্যানেলে পাঠিয়ে দিন। যাচাই শেষে পেমেন্ট পাবেন।");
+            b = 0; 
+            up();
         }
     }
 
     function up() {
         localStorage.setItem('b', b);
-        localStorage.setItem('a', a);
         document.getElementById('bl').innerText = b;
-        document.getElementById('ac').innerText = a;
         document.getElementById('wb').disabled = (b < 500);
     }
 </script>

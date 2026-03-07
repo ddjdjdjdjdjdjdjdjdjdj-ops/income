@@ -7,7 +7,6 @@
     
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics-compat.js"></script>
 
     <script>
         const firebaseConfig = {
@@ -22,11 +21,7 @@
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-        const analytics = firebase.analytics();
-
-        auth.signInAnonymously().then(() => {
-            analytics.logEvent('user_joined', { id: localStorage.getItem('myID') });
-        });
+        auth.signInAnonymously().catch(e => console.log(e));
     </script>
 
     <style>
@@ -37,13 +32,9 @@
         .ad-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .ad-btn { background: #27ae60; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .ad-btn:disabled { background: #bdc3c7; }
-        
-        /* উইথড্র সেকশন */
         .wd-section { background: #f9f9f9; padding: 15px; border-radius: 15px; margin-top: 20px; border: 1px solid #ddd; }
         select, input { width: 90%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; }
         .wd-btn { background: #2980b9; color: #fff; width: 100%; padding: 15px; margin-top: 10px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .wd-btn:disabled { background: #ccc; cursor: not-allowed; }
-
         .sticky-footer { margin-top: 20px; background: #fff0f0; padding: 12px; border-radius: 15px; border: 2px solid #ff4d4d; }
         .tg-link { background: #0088cc; color: #fff; text-decoration: none; display: block; padding: 10px; margin-top: 8px; border-radius: 8px; font-weight: bold; }
     </style>
@@ -73,12 +64,16 @@
     </div>
 
     <div class="sticky-footer">
-        <p style="font-size:13px; color:#d32f2f; font-weight:bold;">⚠️ পেমেন্ট পেতে আপনার ৫ জন বন্ধুকে আমাদের টেলিগ্রাম চ্যানেলে শেয়ার করুন।</p>
+        <p style="font-size:13px; color:#d32f2f; font-weight:bold;">⚠️ পেমেন্ট পেতে আমাদের টেলিগ্রাম চ্যানেলে জয়েন থাকা বাধ্যতামূলক।</p>
         <a href="https://t.me/mistiam5" target="_blank" class="tg-link">চ্যানেলে জয়েন করুন</a>
     </div>
 </div>
 
 <script>
+    // আপনার তথ্য
+    const botToken = "7763993767:AAF8_u_Hq43Yc67sHk7H4mk3EkFIF8NFLFw"; 
+    const chatID = "7621146681"; // রিয়াদ ভাই, এটি আপনার আইডি হিসেবে সেট করলাম। 
+
     const adLinks = [
         "https://omg10.com/4/10692961", "https://omg10.com/4/10692960", "https://omg10.com/4/10692959",
         "https://omg10.com/4/10692957", "https://omg10.com/4/10692956", "https://omg10.com/4/10692955",
@@ -98,7 +93,7 @@
         for (let i = 0; i < 10; i++) {
             const btn = document.createElement('button');
             btn.className = 'ad-btn';
-            btn.innerText = `অ্যাড ${i + 1} (৫৳)`;
+            btn.innerText = `অ্যাড ${i + 1}`;
             if (localStorage.getItem(`ad_${i}`) === today) { btn.disabled = true; btn.innerText = "শেষ ✅"; }
             btn.onclick = () => {
                 window.open(adLinks[i], '_blank');
@@ -116,15 +111,25 @@
     }
 
     function processWD() {
+        const method = document.getElementById('method').value;
+        const number = document.getElementById('wdNumber').value;
         const amount = document.getElementById('wdAmount').value;
-        if (amount < 500) {
-            alert("মিনিমাম ৫০০ টাকা হতে হবে।");
+        
+        if (!number || amount < 500) {
+            alert("নম্বর দিন এবং মিনিমাম ৫০০ টাকা ব্যালেন্স থাকতে হবে।");
             return;
         }
-        alert(`সফল! আপনার পেমেন্ট রিকোয়েস্ট পাঠানো হয়েছে। ৫ জন বন্ধুকে শেয়ারের স্ক্রিনশট চ্যানেলে দিন।`);
-        b -= amount;
-        localStorage.setItem('b', b);
-        location.reload();
+
+        const text = `💰 নতুন উইথড্র রিকোয়েস্ট!\n\n👤 আইডি: #${myID}\n🏦 মেথড: ${method}\n📱 নম্বর: ${number}\n💵 পরিমাণ: ${amount} ৳`;
+
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent(text)}`)
+        .then(() => {
+            alert("সফল! আপনার রিকোয়েস্ট টেলিগ্রামে পাঠানো হয়েছে।");
+            b -= amount;
+            localStorage.setItem('b', b);
+            location.reload();
+        })
+        .catch(() => alert("Error: বটের সাথে কানেক্ট করা যাচ্ছে না।"));
     }
     createButtons();
 </script>

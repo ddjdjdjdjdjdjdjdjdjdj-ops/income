@@ -4,90 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>মিষ্টি আম - ইনকাম</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+
+    <script>
+        // আপনার ফায়ারবেস কনফিগারেশন
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWhYvIKGHfDO4NrH0G5N692FljzD_wmZc",
+            authDomain: "misti-am.firebaseapp.com",
+            projectId: "misti-am",
+            storageBucket: "misti-am.firebasestorage.app",
+            messagingSenderId: "335857181187",
+            appId: "1:335857181187:web:ce34124f9daea3a4262436",
+            measurementId: "G-2DEXZT0L85"
+        };
+
+        // Firebase ইনিশিয়ালাইজ করা
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // কেউ সাইটে ঢুকলেই মেম্বার হিসেবে কাউন্ট হবে
+        auth.signInAnonymously().catch((error) => {
+            console.error("Auth Error:", error);
+        });
+    </script>
+
     <style>
         body { font-family: 'Arial', sans-serif; background: #fff5f8; text-align: center; padding: 10px; margin-bottom: 50px; }
         .box { background: #fff; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
         .balance-card { background: #fff8e1; border: 2px solid orange; border-radius: 15px; padding: 15px; margin-bottom: 15px; }
         .balance { font-size: 30px; font-weight: bold; color: #d35400; }
-        
-        /* অ্যাড গ্রিড */
         .ad-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .ad-btn { background: #27ae60; color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .ad-btn:disabled { background: #bdc3c7; opacity: 0.8; }
-
-        /* উইথড্র সেকশন */
         .wd-section { background: #f9f9f9; padding: 15px; border-radius: 15px; margin-top: 20px; border: 1px solid #ddd; }
-        select, input { width: 90%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; }
-        .wd-btn { background: #2980b9; color: #fff; width: 100%; padding: 15px; margin-top: 10px; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; }
-        .wd-btn:disabled { background: #ccc; cursor: not-allowed; }
-
-        .sticky-footer { margin-top: 20px; background: #fff0f0; padding: 12px; border-radius: 15px; border: 2px solid #ff4d4d; }
-        .tg-link { background: #0088cc; color: #fff; text-decoration: none; display: block; padding: 10px; margin-top: 8px; border-radius: 8px; font-weight: bold; }
-
-        /* অ্যাডমিন এরিয়া */
-        #adminArea { display:none; background:#2c3e50; color:white; padding:20px; border-top: 5px solid red; margin-top:50px; border-radius: 15px; }
+        input { width: 90%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; }
+        .wd-btn { background: #2980b9; color: #fff; width: 100%; padding: 15px; margin-top: 10px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="box">
-    <h1>মিষ্টি আম 💰</h1>
+    <h1>মিষ্টি আম 🥭💰</h1>
     <div class="balance-card">
         <p style="margin:0;">মোট ব্যালেন্স</p>
         <div class="balance"><span id="bl">0</span> ৳</div>
         <p style="margin:0; font-size: 12px; color: #666;">আইডি: #<span id="uid">...</span></p>
     </div>
 
-    <strong style="color: #333;">📺 আজকের ১০টি অ্যাড:</strong>
-    <div class="ad-grid" id="adGrid"></div>
+    <strong>📺 আজকের ১০টি অ্যাড:</strong>
+    <div id="adGrid" class="ad-grid"></div>
 
     <div class="wd-section">
         <strong>💳 টাকা তুলুন</strong>
-        <select id="method">
-            <option value="bkash">বিকাশ (bKash)</option>
-            <option value="nagad">নগদ (Nagad)</option>
-        </select>
         <input type="number" id="wdNumber" placeholder="পার্সোনাল নম্বর দিন">
         <input type="number" id="wdAmount" placeholder="টাকার পরিমাণ (মিনিমাম ৫০০)">
         <button id="wb" class="wd-btn" onclick="processWD()" disabled>টাকা উত্তোলন করুন</button>
     </div>
-
-    <div class="sticky-footer">
-        <p style="font-size:13px; color:#d32f2f; font-weight:bold;">⚠️ পেমেন্ট পেতে আপনার ৫ জন বন্ধুকে আমাদের টেলিগ্রাম চ্যানেলে শেয়ার করুন।</p>
-        <a href="https://t.me/mistiam5" target="_blank" class="tg-link">চ্যানেলে জয়েন করুন</a>
-    </div>
-
-    <div id="adminArea">
-        <h2>👑 Admin Panel (Misti Am)</h2>
-        <div style="background:#34495e; padding:10px; border-radius:10px;">
-            <p>📊 মোট ইউজার: <span id="userCount">Firebase চেক করুন</span></p>
-        </div>
-        <hr>
-        <h4>💰 পেমেন্ট রিকোয়েস্ট লিস্ট:</h4>
-        <div id="wdRequests" style="font-size:12px; text-align:left;">
-            <p>উইথড্র রিকোয়েস্ট দেখতে আপনার ডাটাবেস চেক করুন।</p>
-        </div>
-    </div>
 </div>
 
 <script>
+    // আপনার দেওয়া ১০টি অ্যাড কোড/লিঙ্ক
     const adLinks = [
-        "https://omg10.com/4/10692961","https://omg10.com/4/10692960","https://omg10.com/4/10692959",
-        "https://omg10.com/4/10692957","https://omg10.com/4/10692956","https://omg10.com/4/10692955",
-        "https://omg10.com/4/10692954","https://omg10.com/4/10692953","https://omg10.com/4/10677665",
+        "https://omg10.com/4/10692961", "https://omg10.com/4/10692960", "https://omg10.com/4/10692959",
+        "https://omg10.com/4/10692957", "https://omg10.com/4/10692956", "https://omg10.com/4/10692955",
+        "https://omg10.com/4/10692954", "https://omg10.com/4/10692953", "https://omg10.com/4/10677665",
         "https://omg10.com/4/10678359"
     ];
 
     let b = localStorage.getItem('b') ? parseInt(localStorage.getItem('b')) : 0;
+    
+    // নতুন ইউজারের জন্য ৫০ টাকা বোনাস
+    if (!localStorage.getItem('firstTime')) {
+        b = 50;
+        localStorage.setItem('b', b);
+        localStorage.setItem('firstTime', 'done');
+    }
+
     let myID = localStorage.getItem('myID') || Math.floor(100000 + Math.random() * 900000);
     localStorage.setItem('myID', myID);
     document.getElementById('uid').innerText = myID;
-
-    if (!localStorage.getItem('joined')) {
-        b = 50;
-        localStorage.setItem('b', b);
-        localStorage.setItem('joined', 'true');
-    }
 
     function createButtons() {
         const grid = document.getElementById('adGrid');
@@ -111,7 +108,7 @@
                     localStorage.setItem(`ad_${i}`, today);
                     localStorage.setItem('b', b);
                     location.reload(); 
-                }, 5000);
+                }, 5000); // ৫ সেকেন্ড পর ৫ টাকা যোগ হবে
             };
             grid.appendChild(btn);
         }
@@ -120,37 +117,10 @@
     }
 
     function processWD() {
-        const method = document.getElementById('method').value;
-        const num = document.getElementById('wdNumber').value;
-        const amount = document.getElementById('wdAmount').value;
-
-        if (!num || !amount) {
-            alert("নম্বর এবং টাকার পরিমাণ সঠিকভাবে দিন।");
-            return;
-        }
-        if (amount < 500) {
-            alert("মিনিমাম ৫০০ টাকা হতে হবে।");
-            return;
-        }
-        if (amount > b) {
-            alert("আপনার ব্যালেন্সের চেয়ে বেশি টাকা তুলতে পারবেন না।");
-            return;
-        }
-
-        alert(`সফল! আপনার ${method} নম্বরে (${num}) ${amount}৳ উত্তোলনের রিকোয়েস্ট পাঠানো হয়েছে। ৫ জন বন্ধুকে শেয়ারের স্ক্রিনশট চ্যানেলে দিন।`);
-        b -= amount;
-        localStorage.setItem('b', b);
-        location.reload();
-    }
-
-    // অ্যাডমিন প্যানেল কন্ট্রোল
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('admin') === 'true') {
-        document.getElementById('adminArea').style.display = 'block';
+        alert("সফল! আপনার পেমেন্ট রিকোয়েস্ট পাঠানো হয়েছে।");
     }
 
     createButtons();
 </script>
-
 </body>
 </html>

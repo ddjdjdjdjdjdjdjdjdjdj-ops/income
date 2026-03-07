@@ -131,5 +131,25 @@
 
     createButtons();
 </script>
-</body>
+</bo    <div id="adminArea" style="display:none; background:#2c3e50; color:white; padding:20px; border-top: 5px solid red; margin-top:50px;">
+        <h2>👑 Admin Panel (Misti Am)</h2>
+        <div style="background:#34495e; padding:10px; border-radius:10px;">
+            <p>📊 মোট ইউজার: <span id="userCount">Firebase চেক করুন</span></p>
+        </div>
+        <hr>
+        <h4>💰 পেমেন্ট রিকোয়েস্ট লিস্ট:</h4>
+        <div id="wdRequests" style="font-size:12px; text-align:left;">
+            </div>
+    </div>
+
+    <script>
+        // অ্যাডমিন প্যানেল খোলার লজিক
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('admin') === 'true') {
+            document.getElementById('adminArea').style.display = 'block';
+        }
+    </script>
+    </body>
+</html>
+dy>
 </html>

@@ -7,14 +7,19 @@
     <script type="text/javascript" src="https://getafilenow.com/script_include.php?id=1881500"></script>
     
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f4f4f9; text-align: center; margin: 0; padding: 0; }
-        .header { background-color: #ff9800; color: white; padding: 20px; font-size: 24px; font-weight: bold; }
-        .balance-card { background: white; margin: 20px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .points { font-size: 32px; color: #ff9800; font-weight: bold; margin: 10px 0; }
-        .taka { font-size: 20px; color: #4caf50; font-weight: bold; }
-        .btn-withdraw { background-color: #ccc; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 30px; cursor: not-allowed; display: inline-block; margin-top: 20px; width: 80%; }
-        .btn-active { background-color: #4caf50; cursor: pointer; }
-        .btn-work { background-color: #2196F3; color: white; padding: 15px; border-radius: 10px; text-decoration: none; display: block; margin: 10px auto; width: 70%; font-weight: bold; }
+        body { font-family: 'Arial', sans-serif; background-color: #f0f2f5; text-align: center; margin: 0; padding: 0; color: #333; }
+        .header { background: linear-gradient(45deg, #ff9800, #ff5722); color: white; padding: 25px; font-size: 26px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .balance-card { background: white; margin: 20px auto; padding: 25px; border-radius: 20px; width: 85%; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border: 1px solid #eee; }
+        .points { font-size: 36px; color: #ff9800; font-weight: bold; margin: 5px 0; }
+        .taka { font-size: 22px; color: #2e7d32; font-weight: bold; margin-bottom: 10px; }
+        .rate-info { font-size: 13px; color: #666; background: #fff3e0; display: inline-block; padding: 5px 15px; border-radius: 50px; margin-bottom: 15px; }
+        
+        .btn-main { display: block; width: 80%; margin: 15px auto; padding: 18px; border-radius: 15px; font-size: 18px; font-weight: bold; text-decoration: none; border: none; transition: 0.3s; cursor: pointer; }
+        .btn-work { background-color: #2196F3; color: white; box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3); }
+        .btn-withdraw { background-color: #bdbdbd; color: white; cursor: not-allowed; }
+        .btn-active { background-color: #4caf50; cursor: pointer; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3); }
+        
+        .footer { margin-top: 30px; font-size: 12px; color: #888; padding-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -22,41 +27,66 @@
     <div class="header">🥭 মিষ্টি আম আর্নিং</div>
 
     <div class="balance-card">
-        <div class="balance-title">আপনার বর্তমান ব্যালেন্স</div>
-        <div class="points" id="userPoints">0.00 Points</div>
+        <div style="color: #666; font-size: 16px;">আপনার বর্তমান আয়</div>
+        <div class="points" id="userPoints">0.00 Point</div>
         <div class="taka" id="userTaka">৳ 0.00 Taka</div>
-        <p style="font-size: 12px; color: #666;">(১০০ পয়েন্ট = ৪০ টাকা)</p>
-        
-        <button id="withdrawBtn" class="btn-withdraw" onclick="requestPayment()" disabled>পেমেন্ট নিন (বিকাশ/নগদ)</button>
+        <div class="rate-info">হিসাব: ১০০ পয়েন্ট = ৪০ টাকা</div>
+        <p style="font-size: 13px; color: #d32f2f; font-weight: bold;">মিনিমাম উইথড্র: ১০০ টাকা</p>
     </div>
 
-    <a href="javascript:void(0);" onclick="call_locker();" class="btn-work">🚀 আনলিমিটেড কাজ শুরু করুন</a>
+    <button onclick="call_locker();" class="btn-main btn-work">🚀 আনলিমিটেড কাজ করুন</button>
+
+    <button id="withdrawBtn" class="btn-main btn-withdraw" onclick="sendPaymentRequest()" disabled>💰 পেমেন্ট নিন (বিকাশ/নগদ)</button>
+
+    <div class="footer">
+        কাজ শেষ করার ২০-৩০ মিনিটের মধ্যে পয়েন্ট যোগ হবে।<br>
+        ভিপিএন ব্যবহার করলে পেমেন্ট পাবেন না।
+    </div>
 
     <script>
-        // আপনার শর্ত: ১০০ পয়েন্ট = ৪০ টাকা (১ পয়েন্ট = ০.৪ টাকা)
-        let points = 250; // এখানে আপনার ফায়ারবেস বা ডাটাবেস থেকে পয়েন্ট আসবে
-        let currentTaka = points * 0.4;
+        // আপনার দেওয়া সঠিক তথ্যগুলো এখানে সেট করা হয়েছে
+        let userPoints = 0.00; // শুরুতে পয়েন্ট ০
+        const rate = 0.4; // ১০০ পয়েন্ট = ৪০ টাকা (১ পয়েন্ট = ০.৪ টাকা)
+        const botToken = "7763993767:AAF8_u_Hq43Yc67sHk7H4mk3EkFIF8NFLFw"; // আপনার টোকেন
+        const chatId = "8074594735"; // আপনার সঠিক চ্যাট আইডি (স্ক্রিনশট থেকে প্রাপ্ত)
 
-        function updateDisplay() {
-            document.getElementById('userPoints').innerText = points.toFixed(2) + " Points";
-            document.getElementById('userTaka').innerText = "৳ " + currentTaka.toFixed(2) + " Taka";
+        function updateUI() {
+            let totalTaka = userPoints * rate;
+            document.getElementById('userPoints').innerText = userPoints.toFixed(2) + " Point";
+            document.getElementById('userTaka').innerText = "৳ " + totalTaka.toFixed(2) + " Taka";
 
             let btn = document.getElementById('withdrawBtn');
-            if (currentTaka >= 100) {
+            // ১০০ টাকা বা তার বেশি হলে বাটন সক্রিয় হবে
+            if (totalTaka >= 100) {
                 btn.classList.add('btn-active');
                 btn.disabled = false;
+            } else {
+                btn.classList.remove('btn-active');
+                btn.disabled = true;
             }
         }
 
-        function requestPayment() {
-            let number = prompt("আপনার বিকাশ বা নগদ নম্বরটি দিন:");
-            if (number) {
-                // এখানে আপনার টেলিগ্রাম মেসেজ পাঠানোর কোডটি বসবে
-                alert(number + " নম্বরে আপনার পেমেন্ট রিকোয়েস্ট পাঠানো হয়েছে!");
+        function sendPaymentRequest() {
+            let method = prompt("পেমেন্ট মাধ্যম লিখুন (বিকাশ নাকি নগদ?):");
+            let number = prompt("আপনার নম্বরটি দিন:");
+            
+            if (method && number) {
+                const message = `🔔 নতুন পেমেন্ট রিকোয়েস্ট!\n🥭 অ্যাপ: মিষ্টি আম আর্নিং\n💰 টাকা: ৳${(userPoints * rate).toFixed(2)}\n📱 মাধ্যম: ${method}\n🔢 নম্বর: ${number}`;
+
+                const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+
+                fetch(url).then(res => {
+                    if(res.ok) {
+                        alert("আপনার পেমেন্ট রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!");
+                    } else {
+                        alert("কিছু একটা সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+                    }
+                });
             }
         }
 
-        updateDisplay();
+        updateUI();
     </script>
+
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>মিষ্টি আম - ইনকাম</title>
+    <title>Misti Am - Income</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
@@ -57,7 +57,7 @@
 
     <div class="action-section" id="joinSection" style="background: #fff0f0; border-color: #ff4d4d;">
         <strong>🎁 টেলিগ্রাম জয়েন করে ১০ টাকা পান</strong>
-        <p style="font-size: 11px; margin: 5px 0;">আমাদের চ্যানেলে জয়েন করলেই পাবেন ১০ টাকা বোনাস!</p>
+        <p style="font-size: 11px; margin: 5px 0;">চ্যানেলে জয়েন করলেই পাবেন ১০ টাকা বোনাস!</p>
         <a href="https://t.me/mistiam5" target="_blank" class="share-btn" style="background:#0088cc;" onclick="giveJoinBonus()">টেলিগ্রাম চ্যানেলে জয়েন করুন</a>
     </div>
 
@@ -91,11 +91,11 @@
     const refLink = `https://ddjdjdjdjdjdjdjdjdjdj-ops.github.io/income/?ref=${myID}`;
 
     function shareWhatsApp() {
-        window.open(`https://wa.me/?text=${encodeURIComponent("মিষ্টি আম অ্যাপে জয়েন করুন আর ১০ টাকা বোনাস নিন! লিঙ্ক: " + refLink)}`);
+        window.open(`https://wa.me/?text=${encodeURIComponent("মিষ্টি আমে জয়েন করলেই ১০ টাকা বোনাস! লিঙ্ক: " + refLink)}`);
     }
 
     function shareTelegram() {
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent("মিষ্টি আম থেকে ইনকাম শুরু করুন!")}`);
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent("ইনকাম শুরু করুন!")}`);
     }
 
     function giveJoinBonus() {
@@ -103,8 +103,9 @@
             b += 10;
             updateBalance();
             localStorage.setItem('joined', 'true');
-            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent("🎁 ইউজার #"+myID+" চ্যানেলে জয়েন করে ১০৳ বোনাস নিয়েছে!")}`);
-            alert("১০ টাকা জয়েন বোনাস যোগ হয়েছে!");
+            // Telegram bot notification
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent("🎁 User #"+myID+" channel-e join kore 10tk bonus niyeche!")}`);
+            alert("১০ টাকা বোনাস যোগ হয়েছে!");
             location.reload();
         }
     }
@@ -119,10 +120,10 @@
         const method = document.getElementById('method').value;
         const num = document.getElementById('wdNumber').value;
         if(!num) { alert("নম্বর দিন!"); return; }
-        const text = `💰 নতুন উইথড্র রিকোয়েস্ট!\nআইডি: #${myID}\nমেথড: ${method}\nনম্বর: ${num}\nপরিমাণ: ${b} ৳`;
+        const text = `💰 New Withdraw!\nID: #${myID}\nMethod: ${method}\nNumber: ${num}\nAmount: ${b} ৳`;
         fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=${encodeURIComponent(text)}`)
         .then(() => {
-            alert("আপনার উইথড্র রিকোয়েস্ট টেলিগ্রামে পাঠানো হয়েছে!");
+            alert("টেলিগ্রামে উইথড্র পাঠানো হয়েছে!");
             b = 0;
             updateBalance();
             location.reload();
@@ -154,5 +155,5 @@
     createButtons();
 </script>
 </body>
-    </html>
+                </html>
     

@@ -50,24 +50,24 @@
 
     <div class="action-section">
         <strong>📢 রেফার করলে ১০ টাকা বোনাস</strong>
-        <p style="font-size: 11px; margin: 5px 0;">রেফার লিঙ্ক শেয়ার করে ইনকাম করুন!</p>
-        <button onclick="shareWhatsApp()" class="share-btn" style="background: #25d366;">WhatsApp শেয়ার করুন</button>
-        <button onclick="shareTelegram()" class="share-btn" style="background: #0088cc;">Telegram শেয়ার করুন</button>
+        <p style="font-size: 11px; margin: 5px 0;">নিচের বাটনে ক্লিক করে বটের লিঙ্ক শেয়ার করুন!</p>
+        <button onclick="shareWhatsApp()" class="share-btn" style="background: #25d366;">WhatsApp-এ শেয়ার করুন</button>
+        <button onclick="shareTelegram()" class="share-btn" style="background: #0088cc;">Telegram-এ শেয়ার করুন</button>
     </div>
 
     <div class="action-section" id="joinSection" style="background: #fff0f0; border-color: #ff4d4d;">
         <strong>🎁 টেলিগ্রাম জয়েন করে ১০ টাকা পান</strong>
-        <p style="font-size: 11px; margin: 5px 0;">আমাদের চ্যানেলে জয়েন করলেই পাবেন ১০ টাকা বোনাস!</p>
+        <p style="font-size: 11px; margin: 5px 0;">চ্যানেলে জয়েন করলেই ১০ টাকা ব্যালেন্সে পাবেন!</p>
         <a href="https://t.me/mistiam5" target="_blank" class="share-btn" style="background:#0088cc;" onclick="giveJoinBonus()">টেলিগ্রাম চ্যানেলে জয়েন করুন</a>
     </div>
 
     <div class="action-section">
         <strong>💳 টাকা উত্তোলন (Withdraw)</strong>
         <select id="method">
-            <option value="bKash">বিকাশ (Personal)</option>
-            <option value="Nagad">নগদ (Personal)</option>
+            <option value="bKash">বিকাশ</option>
+            <option value="Nagad">নগদ</option>
         </select>
-        <input type="number" id="wdNumber" placeholder="বিকাশ/নগদ নম্বর দিন">
+        <input type="number" id="wdNumber" placeholder="নম্বর দিন">
         <button id="wb" class="wd-btn" onclick="processWD()" disabled>উইথড্র করুন (মিনিমাম ৫০০৳)</button>
     </div>
 </div>
@@ -75,6 +75,7 @@
 <script>
     const botToken = "7763993767:AAF8_u_Hq43Yc67sHk7H4mk3EkFIF8NFLFw";
     const chatID = "7621146681"; 
+    const botLink = "https://t.me/mostiambot"; // আপনার বটের লিঙ্ক
 
     const adLinks = [
         "https://omg10.com/4/10692961", "https://omg10.com/4/10692960", "https://omg10.com/4/10692959",
@@ -88,31 +89,23 @@
     localStorage.setItem('myID', myID);
     document.getElementById('uid').innerText = myID;
 
-    const refLink = `https://ddjdjdjdjdjdjdjdjdjdj-ops.github.io/income/?ref=${myID}`;
-
     function sendTelegramMessage(text) {
-        const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
-        const data = {
-            chat_id: chatID,
-            text: text,
-            parse_mode: 'HTML'
-        };
-
-        fetch(url, {
+        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).then(res => {
-            if(!res.ok) console.error("Telegram error");
+            body: JSON.stringify({ chat_id: chatID, text: text, parse_mode: 'HTML' })
         });
     }
 
+    // বটের লিঙ্ক রেফারেল আইডি সহ শেয়ার হবে
     function shareWhatsApp() {
-        window.open(`https://wa.me/?text=${encodeURIComponent("মিষ্টি আম-এ জয়েন করলেই ১০ টাকা বোনাস! লিঙ্ক: " + refLink)}`);
+        const text = `মিষ্টি আম বত-এ জয়েন করে ইনকাম করুন! আমার রেফারেল আইডি: ${myID}\nলিঙ্ক: ${botLink}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
     }
 
     function shareTelegram() {
-        window.open(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent("মিষ্টি আম ইনকাম অ্যাপ!")}`);
+        const text = `ইনকাম শুরু করুন মিষ্টি আম বত থেকে! আইডি: ${myID}`;
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(botLink)}&text=${encodeURIComponent(text)}`);
     }
 
     function giveJoinBonus() {
@@ -120,8 +113,8 @@
             b += 10;
             updateBalance();
             localStorage.setItem('joined', 'true');
-            sendTelegramMessage(`<b>🎁 Join Bonus Alert!</b>\nUser ID: #${myID}\nBalance: ${b}৳`);
-            alert("অভিনন্দন! ১০ টাকা বোনাস আপনার ব্যালেন্সে যোগ হয়েছে।");
+            sendTelegramMessage(`🎁 ইউজার #${myID} চ্যানেলে জয়েন করে ১০৳ বোনাস নিয়েছে!`);
+            alert("অভিনন্দন! ১০ টাকা যোগ হয়েছে।");
             location.reload();
         }
     }
@@ -136,14 +129,10 @@
         const method = document.getElementById('method').value;
         const num = document.getElementById('wdNumber').value;
         if(!num) { alert("নম্বর দিন!"); return; }
-        
-        const text = `<b>💰 Withdraw Request!</b>\nID: #${myID}\nMethod: ${method}\nNumber: ${num}\nAmount: ${b}৳`;
+        const text = `💰 <b>Withdraw!</b>\nID: #${myID}\nমেথড: ${method}\nনম্বর: ${num}\nপরিমাণ: ${b}৳`;
         sendTelegramMessage(text);
-        
-        alert("আপনার উইথড্র রিকোয়েস্ট টেলিগ্রাম বটে পাঠানো হয়েছে!");
-        b = 0;
-        updateBalance();
-        location.reload();
+        alert("টেলিগ্রামে পাঠানো হয়েছে!");
+        b = 0; updateBalance(); location.reload();
     }
 
     function createButtons() {

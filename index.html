@@ -3,86 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>মিষ্টি আম আর্নিং</title>
-    
+    <title>X World - Income & Withdraw</title>
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f0f2f5; text-align: center; margin: 0; padding: 0; color: #333; }
-        .header { background: linear-gradient(45deg, #ff9800, #ff5722); color: white; padding: 25px; font-size: 26px; font-weight: bold; }
-        .balance-card { background: white; margin: 20px auto; padding: 25px; border-radius: 20px; width: 85%; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
-        .points { font-size: 36px; color: #ff9800; font-weight: bold; }
-        .taka { font-size: 22px; color: #2e7d32; font-weight: bold; margin-bottom: 10px; }
-        .rate-info { font-size: 13px; color: #666; background: #fff3e0; display: inline-block; padding: 5px 15px; border-radius: 50px; margin-bottom: 15px; }
+        body { font-family: 'Arial', sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: auto; }
         
-        /* কাজ করার নিয়ম বক্স */
-        .guide-box { background: #e3f2fd; margin: 20px auto; padding: 15px; border-radius: 15px; width: 85%; text-align: left; border-left: 5px solid #2196f3; }
-        .guide-box h3 { margin-top: 0; color: #0d47a1; font-size: 18px; }
-        .guide-box ul { padding-left: 20px; font-size: 14px; line-height: 1.6; }
+        /* অ্যাপ লিস্ট স্টাইল */
+        .app-card { 
+            background: white; padding: 15px; margin-bottom: 15px; 
+            border-radius: 10px; display: flex; justify-content: space-between; 
+            align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .install-btn { 
+            background: #007bff; color: white; text-decoration: none; 
+            padding: 10px 20px; border-radius: 5px; font-weight: bold;
+        }
 
-        .btn-main { display: block; width: 80%; margin: 15px auto; padding: 18px; border-radius: 15px; font-size: 18px; font-weight: bold; text-decoration: none; border: none; transition: 0.3s; cursor: pointer; }
-        .btn-work { background-color: #2196F3; color: white; box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3); }
-        .btn-withdraw { background-color: #bdbdbd; color: white; cursor: not-allowed; }
-        .btn-active { background-color: #4caf50; cursor: pointer; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3); }
+        /* নগদ উইথড্রয়াল ফর্ম স্টাইল */
+        .withdraw-section { 
+            background: #fff; padding: 20px; border-radius: 10px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-top: 30px;
+            border-top: 5px solid #d12026;
+        }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .nagad-btn { 
+            width: 100%; padding: 15px; background: #d12026; color: white; 
+            border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 16px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="header">🥭 মিষ্টি আম আর্নিং</div>
-
-    <div class="balance-card">
-        <div style="color: #666; font-size: 16px;">আপনার বর্তমান আয়</div>
-        <div class="points" id="userPoints">0.00 Point</div>
-        <div class="taka" id="userTaka">৳ 0.00 Taka</div>
-        <div class="rate-info">হিসাব: ১০০ পয়েন্ট = ৪০ টাকা</div>
-        <p style="font-size: 13px; color: #d32f2f; font-weight: bold;">মিনিমাম উইথড্র: ১০০ টাকা</p>
+<div class="container">
+    <h2 style="text-align: center; color: #333;">অ্যাপ ইন্সটল করে আয় করুন</h2>
+    <div id="app-list">
+        <p style="text-align: center;">অ্যাপ লোড হচ্ছে...</p>
     </div>
 
-    <a href="https://getafilenow.com/show.php?l=0&u=1881500" class="btn-main btn-work">🚀 আনলিমিটেড কাজ করুন</a>
-
-    <div class="guide-box">
-        <h3>📖 কাজ করার সঠিক নিয়ম:</h3>
-        <ul>
-            <li>উপরের নীল বাটনে ক্লিক করলে কাজের লিস্ট আসবে।</li>
-            <li>অ্যাপ ডাউনলোড বা নম্বর ভেরিফাইয়ের কাজগুলো সম্পন্ন করুন।</li>
-            <li>সঠিক তথ্য দিয়ে কাজ শেষ করলে পয়েন্ট যোগ হবে।</li>
-            <li>পেমেন্ট পেতে কোনো প্রকার VPN ব্যবহার করবেন না।</li>
-        </ul>
+    <div class="withdraw-section">
+        <h3 style="color: #d12026; text-align: center; margin-top: 0;">নগদ উইথড্র (Nagad)</h3>
+        <p style="text-align: center; font-size: 14px; color: #666;">সর্বনিম্ন উত্তোলন: <b>১০০ টাকা</b></p>
+        
+        <input type="number" id="nagad-number" placeholder="আপনার নগদ নম্বর (017...)">
+        <input type="number" id="withdraw-amount" placeholder="টাকার পরিমাণ (কমপক্ষে ১০০)">
+        
+        <button class="nagad-btn" onclick="sendNagadRequest()">টাকা উত্তোলন করুন</button>
     </div>
+</div>
 
-    <button id="withdrawBtn" class="btn-main btn-withdraw" onclick="sendPaymentRequest()" disabled>💰 পেমেন্ট নিন (বিকাশ/নগদ)</button>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-    <script>
-        let userPoints = 0.00; // শুরুতে পয়েন্ট ০
-        const rate = 0.4; // ১০০ পয়েন্ট = ৪০ টাকা
-        const botToken = "7763993767:AAF8_u_Hq43Yc67sHk7H4mk3EkFIF8NFLFw"; 
-        const chatId = "8074594735"; 
+<script>
+    // আপনার Firebase Config এখানে বসান
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
 
-        function updateUI() {
-            let totalTaka = userPoints * rate;
-            document.getElementById('userPoints').innerText = userPoints.toFixed(2) + " Point";
-            document.getElementById('userTaka').innerText = "৳ " + totalTaka.toFixed(2) + " Taka";
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-            let btn = document.getElementById('withdrawBtn');
-            if (totalTaka >= 100) {
-                btn.classList.add('btn-active');
-                btn.disabled = false;
+    // ১. অ্যাপ লিস্ট লোড করা (সিরিয়াল অনুযায়ী)
+    function loadApps() {
+        const listDiv = document.getElementById('app-list');
+        db.collection("apps").orderBy("id", "asc").onSnapshot((querySnapshot) => {
+            listDiv.innerHTML = "";
+            if (querySnapshot.empty) {
+                listDiv.innerHTML = "<p style='text-align:center;'>কোনো অ্যাপ নেই।</p>";
+                return;
             }
+            querySnapshot.forEach((doc) => {
+                const app = doc.data();
+                listDiv.innerHTML += `
+                    <div class="app-card">
+                        <div>
+                            <b style="font-size: 18px;">${app.id}. ${app.name}</b>
+                            <p style="margin: 5px 0; color: #28a745;">পুরস্কার: ${app.reward} টাকা</p>
+                        </div>
+                        <a href="${app.link}" target="_blank" class="install-btn">ইন্সটল</a>
+                    </div>`;
+            });
+        });
+    }
+
+    // ২. নগদ উইথড্র রিকোয়েস্ট পাঠানো (মিনিমাম ১০০ টাকা)
+    function sendNagadRequest() {
+        const phone = document.getElementById('nagad-number').value;
+        const amount = parseInt(document.getElementById('withdraw-amount').value);
+
+        if (phone.length < 11) {
+            alert("দয়া করে সঠিক নগদ নম্বর দিন।");
+            return;
+        }
+        if (isNaN(amount) || amount < 100) {
+            alert("দুঃখিত, সর্বনিম্ন ১০০ টাকা উইথড্র করা যাবে।");
+            return;
         }
 
-        function sendPaymentRequest() {
-            let method = prompt("পেমেন্ট মাধ্যম (বিকাশ/নগদ):");
-            let number = prompt("আপনার নম্বরটি দিন:");
-            
-            if (method && number) {
-                const message = `🔔 পেমেন্ট রিকোয়েস্ট!\n💰 টাকা: ৳${(userPoints * rate).toFixed(2)}\n📱 মাধ্যম: ${method}\n🔢 নম্বর: ${number}`;
-                const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+        db.collection("withdrawals").add({
+            phone: phone,
+            amount: amount,
+            method: "Nagad",
+            status: "pending",
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+            alert("আপনার ১০০ টাকার উইথড্র রিকোয়েস্ট সফল হয়েছে! অ্যাডমিন চেক করে পেমেন্ট করবে।");
+            document.getElementById('nagad-number').value = "";
+            document.getElementById('withdraw-amount').value = "";
+        })
+        .catch((error) => alert("Error: " + error.message));
+    }
 
-                fetch(url).then(res => {
-                    if(res.ok) alert("রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!");
-                });
-            }
-        }
+    loadApps();
+</script>
 
-        updateUI();
-    </script>
 </body>
 </html>

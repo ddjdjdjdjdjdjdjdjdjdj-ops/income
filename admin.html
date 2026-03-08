@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>X World - Protected Admin</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f2f5; }
+        #login-box { max-width: 300px; margin: 100px auto; background: white; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        #admin-content { display: none; } /* শুরুতে হাইড থাকবে */
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
+        button { background: #007bff; color: white; cursor: pointer; border: none; font-weight: bold; }
+        .approve-btn { background: #28a745; width: auto; padding: 5px 10px; margin: 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+    </style>
+</head>
+<body>
+
+<div id="login-box">
+    <h3>Admin Login</h3>
+    <input type="password" id="admin-pass" placeholder="পাসওয়ার্ড দিন">
+    <button onclick="checkPass()">Login</button>
+</div>
+
+<div id="admin-content" class="container">
+    <h2>নতুন অ্যাপ যোগ করুন</h2>
+    <input type="number" id="app-id" placeholder="সিরিয়াল নম্বর">
+    <input type="text" id="app-name" placeholder="অ্যাপের নাম">
+    <input type="text" id="app-link" placeholder="MyLead লিঙ্ক">
+    <input type="number" id="app-reward" placeholder="টাকা (যেমন: ১০)">
+    <button onclick="addApp()">সেভ করুন</button>
+
+    <hr>
+
+    <h2>পেন্ডিং পেমেন্ট লিস্ট</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>নম্বর</th>
+                <th>টাকা</th>
+                <th>মেথড</th>
+                <th>অ্যাকশন</th>
+            </tr>
+        </thead>
+        <tbody id="payment-list"></tbody>
+    </table>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script>
+    // আপনার নিজের পাসওয়ার্ড এখানে সেট করুন
+    const SECRET_PASSWORD = "MY_SECRET_PASS_123"; 
+
+    function checkPass() {
+        const inputPass = document.getElementById('admin-pass').value;
+        if (inputPass === SECRET_PASSWORD) {
+            document.getElementById('login-box').style.display = 'none';
+            document.getElementById('admin-content').style.display = 'block';
+            loadData(); // পাসওয়ার্ড সঠিক হলে ডাটা লোড হবে
+        } else {
+            alert("ভুল পাসওয়ার্ড!");
+        }
+    }
+
+    // আপনার Firebase Config এখানে বসান
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function addApp() {
+        const id = document.getElementById('app-id').value;
+        const name = document.getElementById('app-name').value;
+        const link = document.getElementById('app-link').value;
+        const reward = document.getElementById('app-reward').value;
+
+        db.collection("apps").add({
+            id: parseInt(id),
+            name: name,
+            link: link,
+            reward: parseInt(reward)
+        }).then(() => {
+            alert("সফলভাবে যোগ হয়েছে!");
+            location.reload();
+        });
+    }
+
+    function loadData() {
+        db.collection("withdrawals").where("status", "==", "pending").onSnapshot((querySnapshot) => {
+            const list = document.getElementById('payment-list');
+            list.innerHTML = "";
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                list.innerHTML += `
+                    <tr>
+                        <td>${data.phone}</td>
+                        <td>${data.amount} TK</td>
+                        <td>${data.method}</td>
+                        <td><button class="approve-btn" onclick="done('${doc.id}')">Done</button></td>
+                    </tr>
+                `;
+            });
+        });
+    }
+
+    function done(id) {
+        db.collection("withdrawals").doc(id).update({ status: "success" })
+        .then(() => alert("পেমেন্ট সফল!"));
+    }
+</script>
+
+</body>
+      </html>
+  

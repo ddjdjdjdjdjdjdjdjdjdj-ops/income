@@ -10,76 +10,64 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
     <style>
-        body { font-family: Roboto, Arial, sans-serif; margin: 0; background: #fff; padding-bottom: 70px; }
+        body { font-family: Roboto, Arial, sans-serif; margin: 0; background: #0f0f0f; color: #fff; padding-bottom: 70px; }
+        header { position: sticky; top: 0; background: #0f0f0f; display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; z-index: 100; border-bottom: 1px solid #272727; }
+        .logo { font-size: 20px; font-weight: bold; color: #fff; }
+        .logo span { color: red; }
         
-        /* Top Header */
-        header { position: sticky; top: 0; background: #fff; display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; z-index: 100; }
-        .logo { font-size: 22px; font-weight: bold; color: #000; letter-spacing: -1px; }
-        .header-icons { display: flex; gap: 20px; font-size: 20px; }
-
-        /* Video Feed */
-        .video-card { width: 100%; margin-bottom: 20px; }
-        .thumbnail { width: 100%; aspect-ratio: 16/9; background: #000; object-fit: cover; }
+        /* Video Card Style */
+        .video-card { width: 100%; margin-bottom: 10px; border-bottom: 5px solid #272727; }
+        .v-player { width: 100%; aspect-ratio: 16/9; background: #000; border: none; }
         .v-details { display: flex; padding: 12px; gap: 12px; }
-        .v-avatar { width: 36px; height: 36px; border-radius: 50%; background: #eee; }
+        .v-avatar { width: 40px; height: 40px; border-radius: 50%; background: #333; cursor: pointer; }
         .v-text { flex: 1; }
-        .v-title { font-size: 16px; font-weight: 500; margin: 0 0 4px 0; line-height: 1.4; color: #0f0f0f; }
-        .v-meta { font-size: 12px; color: #606060; }
+        .v-title { font-size: 15px; font-weight: 500; margin: 0 0 5px 0; color: #f1f1f1; }
+        .v-meta { font-size: 12px; color: #aaa; }
 
-        /* Bottom Navigation Bar (YouTube Style) */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 55px; background: #fff; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #e5e5e5; }
-        .nav-item { text-align: center; font-size: 10px; color: #0f0f0f; cursor: pointer; }
-        .nav-item i { font-size: 22px; display: block; margin-bottom: 2px; }
-        .plus-icon { font-size: 35px !important; }
+        /* Bottom Navigation */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: #0f0f0f; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #272727; }
+        .nav-item { text-align: center; font-size: 10px; color: #fff; flex: 1; cursor: pointer; }
+        .nav-item i { font-size: 24px; display: block; margin-bottom: 2px; }
+        .plus-btn { font-size: 35px !important; color: #fff; }
 
-        /* Login Overlay */
-        #loginOverlay { position: fixed; inset: 0; background: #fff; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; display: none; }
-        .login-btn { padding: 10px 20px; background: #065fd4; color: #fff; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; }
+        /* Hide content until login */
+        #mainApp { display: none; }
     </style>
 </head>
 <body>
 
-<div id="loginOverlay">
-    <h1 style="color:red">X World</h1>
-    <p>ভিডিও দেখতে লগইন করুন</p>
-    <button class="login-btn" onclick="login()">Sign in with Google</button>
+<div id="mainApp">
+    <header>
+        <div class="logo"><span>▶</span> X World</div>
+        <div style="font-size: 20px;">🔍 &nbsp; 🔔</div>
+    </header>
+
+    <div id="videoFeed"></div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="location.reload()"><i>🏠</i>Home</div>
+        <div class="nav-item"><i>🩳</i>Shorts</div>
+        <div class="nav-item" onclick="document.getElementById('fileInput').click()">
+            <i class="plus-btn">+</i>
+        </div>
+        <div class="nav-item"><i>📺</i>Subs</div>
+        <div class="nav-item" id="userBtn">
+            <i id="userIcon">👤</i>You
+        </div>
+    </nav>
 </div>
-
-<header>
-    <div class="logo">X World</div>
-    <div class="header-icons">
-        <span>🔍</span>
-        <span>🔔</span>
-    </div>
-</header>
-
-<div id="videoFeed">
-    </div>
-
-<nav class="bottom-nav">
-    <div class="nav-item" onclick="window.scrollTo(0,0)"><i>🏠</i>Home</div>
-    <div class="nav-item"><i>🩳</i>Shorts</div>
-    <div class="nav-item" onclick="document.getElementById('fileInput').click()">
-        <i class="plus-icon">⊕</i>
-    </div>
-    <div class="nav-item"><i>📺</i>Subscriptions</div>
-    <div class="nav-item" id="userBtn" onclick="showProfile()">
-        <i id="userIcon">👤</i>You
-    </div>
-</nav>
 
 <input type="file" id="fileInput" accept="video/*" style="display: none;" onchange="handleUpload(event)">
 
 <script>
-    // Firebase Config
+    // Tumar Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyBWhYvIKGHfDO4NrH0G5N692FljzD_wmZc",
       authDomain: "misti-am.firebaseapp.com",
       projectId: "misti-am",
       storageBucket: "misti-am.firebasestorage.app",
       messagingSenderId: "335857181187",
-      appId: "1:335857181187:web:ce34124f9daea3a4262436",
-      measurementId: "G-2DEXZT0L85"
+      appId: "1:335857181187:web:ce34124f9daea3a4262436"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -87,12 +75,12 @@
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    // ১. অটো লগইন চেক
+    // DOKAR SATHE SATHE LOGIN POPUP
     auth.onAuthStateChanged(user => {
         if (!user) {
-            document.getElementById('loginOverlay').style.display = 'flex';
+            login(); // User na thakle login popup khulbe
         } else {
-            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
             document.getElementById('userIcon').innerHTML = `<img src="${user.photoURL}" style="width:24px; border-radius:50%">`;
             loadVideos();
         }
@@ -100,16 +88,15 @@
 
     function login() {
         const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider);
+        auth.signInWithPopup(provider).catch(err => alert("Login Error: " + err.message));
     }
 
-    // ২. ইউটিউব স্টাইলে ভিডিও আপলোড (টাইটেলসহ)
     async function handleUpload(event) {
         const file = event.target.files[0];
-        const title = prompt("Enter video title:");
+        const title = prompt("Video Title Likho:");
         if(!title || !file) return;
 
-        alert("Uploading...");
+        alert("Upload shuru hoise...");
         const ref = storage.ref(`videos/${Date.now()}`);
         await ref.put(file);
         const url = await ref.getDownloadURL();
@@ -119,41 +106,33 @@
             url: url,
             uploader: auth.currentUser.displayName,
             avatar: auth.currentUser.photoURL,
-            views: 0,
-            time: firebase.firestore.FieldValue.serverTimestamp()
+            views: Math.floor(Math.random() * 500) + "K",
+            time: "Just now"
         });
         alert("Upload Done!");
     }
 
-    // ৩. ভিডিও ফিড লোড করা
     function loadVideos() {
-        db.collection("videos").orderBy("time", "desc").onSnapshot(snap => {
+        db.collection("videos").onSnapshot(snap => {
             const feed = document.getElementById('videoFeed');
             feed.innerHTML = "";
             snap.forEach(doc => {
                 const v = doc.data();
                 feed.innerHTML += `
                     <div class="video-card">
-                        <video class="thumbnail" src="${v.url}" controls></video>
+                        <video class="v-player" src="${v.url}" controls></video>
                         <div class="v-details">
                             <img class="v-avatar" src="${v.avatar}">
                             <div class="v-text">
                                 <p class="v-title">${v.title}</p>
-                                <p class="v-meta">${v.uploader} • ${v.views} views</p>
+                                <p class="v-meta">${v.uploader} • ${v.views} views • ${v.time}</p>
                             </div>
-                            <span style="font-size:20px">⋮</span>
+                            <span>⋮</span>
                         </div>
                     </div>`;
             });
         });
     }
-
-    function showProfile() {
-        const user = auth.currentUser;
-        alert(`Name: ${user.displayName}\nEmail: ${user.email}`);
-    }
 </script>
-
 </body>
-    </html>
-        
+</html>

@@ -1,39 +1,160 @@
 <!DOCTYPE html>
-<html>
+<html lang="bn">
 <head>
-    <title>X World - Video App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X World | Video Platform</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding-bottom: 60px; background: #f9f9f9; }
-        header { display: flex; justify-content: space-between; padding: 15px; background: #fff; border-bottom: 1px solid #ddd; position: sticky; top: 0; }
-        .search-icon { font-size: 20px; cursor: pointer; }
-        .video-card { background: #fff; margin-bottom: 10px; border-radius: 8px; overflow: hidden; }
-        .thumbnail { width: 100%; height: 200px; background: #ccc; object-fit: cover; }
-        .video-info { padding: 10px; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: #fff; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #ddd; }
-        .nav-item { text-align: center; font-size: 12px; color: #555; cursor: pointer; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #f9f9f9; padding-bottom: 80px; }
+        header { background: #fff; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
+        .logo { color: #ff0000; font-weight: bold; font-size: 22px; }
+        .search-container { flex-grow: 1; margin: 0 15px; position: relative; }
+        .search-box { width: 90%; padding: 8px 15px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
+        
+        /* Video Card Style (YouTube Style) */
+        .feed { padding: 10px; }
+        .video-card { background: #fff; margin-bottom: 20px; width: 100%; border-radius: 12px; overflow: hidden; }
+        .main-video { width: 100%; height: 220px; background: #000; object-fit: cover; }
+        .video-info { padding: 12px; display: flex; gap: 12px; }
+        .uploader-img { width: 40px; height: 40px; border-radius: 50%; background: #ddd; cursor: pointer; }
+        .details { flex: 1; }
+        .v-title { font-weight: 600; font-size: 16px; margin: 0 0 5px 0; color: #0f0f0f; }
+        .v-meta { font-size: 13px; color: #606060; }
+        
+        /* Interactions */
+        .actions { display: flex; gap: 20px; padding: 10px; border-top: 1px solid #f1f1f1; }
+        .act-btn { cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px; color: #0f0f0f; }
+        .follow-btn { border: none; background: #0f0f0f; color: #fff; padding: 6px 15px; border-radius: 18px; font-weight: bold; cursor: pointer; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: #fff; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #e5e5e5; }
+        .nav-tab { text-align: center; color: #0f0f0f; font-size: 11px; cursor: pointer; flex: 1; }
+        .nav-icon { font-size: 22px; margin-bottom: 2px; }
+        .upload-circle { background: #f2f2f2; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; margin-top: -30px; border: 4px solid #fff; box-shadow: 0 -2px 5px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
 
 <header>
-    <div style="font-weight: bold; font-size: 20px; color: red;">X World</div>
-    <div class="search-icon">🔍</div>
+    <div class="logo">X World</div>
+    <div class="search-container">
+        <input type="text" class="search-box" placeholder="সার্চ করুন...">
+    </div>
+    <div id="userProfile" onclick="login()">👤</div>
 </header>
 
-<div class="video-list" id="videoContainer">
-    <div class="video-card">
-        <img src="thumb-sample.jpg" class="thumbnail">
-        <div class="video-info">
-            <h3 style="margin: 5px 0;">ভিডিওর টাইটেল এখানে থাকবে</h3>
-            <p style="font-size: 14px; color: #777;">ইউজার নেম • ২ দিন আগে</p>
-        </div>
+<div class="feed" id="videoFeed">
     </div>
-</div>
 
-<div class="bottom-nav">
-    <div class="nav-item">🎬<br>Videos</div>
-    <div class="nav-item">👤<br>Profile</div>
-</div>
+<nav class="bottom-nav">
+    <div class="nav-tab" onclick="location.reload()">
+        <div class="nav-icon">🏠</div>Home
+    </div>
+    <div class="nav-tab" onclick="document.getElementById('fileInput').click()">
+        <div class="upload-circle">+</div>
+    </div>
+    <div class="nav-tab" id="profileBtn">
+        <div class="nav-icon">👤</div>Profile
+    </div>
+</nav>
 
+<input type="file" id="fileInput" accept="video/*" style="display: none;" onchange="uploadVideo(event)">
+
+<script>
+    // আপনার প্রোভাইড করা কনফিগ
+    const firebaseConfig = {
+      apiKey: "AIzaSyBWhYvIKGHfDO4NrH0G5N692FljzD_wmZc",
+      authDomain: "misti-am.firebaseapp.com",
+      projectId: "misti-am",
+      storageBucket: "misti-am.firebasestorage.app",
+      messagingSenderId: "335857181187",
+      appId: "1:335857181187:web:ce34124f9daea3a4262436",
+      measurementId: "G-2DEXZT0L85"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    // ১. জিমেইল লগইন
+    function login() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).then(res => {
+            alert("স্বাগতম " + res.user.displayName);
+            location.reload();
+        });
+    }
+
+    // ২. ভিডিও আপলোড (সরাসরি গ্যালারি থেকে)
+    async function uploadVideo(event) {
+        const user = auth.currentUser;
+        if(!user) return alert("আগে জিমেইল দিয়ে লগইন করুন!");
+        
+        const file = event.target.files[0];
+        const title = prompt("ভিডিওর একটি টাইটেল দিন:");
+        if(!title) return;
+
+        const ref = storage.ref(`videos/${Date.now()}_${file.name}`);
+        alert("ভিডিও আপলোড হচ্ছে... দয়া করে অপেক্ষা করুন।");
+        
+        await ref.put(file);
+        const url = await ref.getDownloadURL();
+
+        await db.collection("videos").add({
+            title: title,
+            url: url,
+            uid: user.uid,
+            uploader: user.displayName,
+            photo: user.photoURL,
+            views: 0,
+            time: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert("আপলোড সফল হয়েছে!");
+        location.reload();
+    }
+
+    // ৩. ভিডিও ফিড লোড করা
+    db.collection("videos").orderBy("time", "desc").onSnapshot(snap => {
+        const feed = document.getElementById('videoFeed');
+        feed.innerHTML = "";
+        snap.forEach(doc => {
+            const data = doc.data();
+            feed.innerHTML += `
+                <div class="video-card">
+                    <video class="main-video" controls src="${data.url}"></video>
+                    <div class="video-info">
+                        <img src="${data.photo}" class="uploader-img" onclick="alert('ID: ${data.uploader}')">
+                        <div class="details">
+                            <p class="v-title">${data.title}</p>
+                            <p class="v-meta">${data.uploader} • ${data.views || 0} views</p>
+                        </div>
+                        <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
+                    </div>
+                    <div class="actions">
+                        <div class="act-btn">👍 Like</div>
+                        <div class="act-btn">💬 Comment</div>
+                        <div class="act-btn">🔗 Share</div>
+                    </div>
+                </div>
+            `;
+        });
+    });
+
+    function toggleFollow(btn) {
+        if(btn.innerText === "Follow") {
+            btn.innerText = "Following";
+            btn.style.background = "#ccc";
+        } else {
+            btn.innerText = "Follow";
+            btn.style.background = "#0f0f0f";
+        }
+    }
+</script>
 </body>
 </html>

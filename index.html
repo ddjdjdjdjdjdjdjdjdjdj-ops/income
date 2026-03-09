@@ -1,127 +1,39 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>X World - Income & Withdraw</title>
+    <title>X World - Video App</title>
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: auto; }
-        
-        /* অ্যাপ লিস্ট স্টাইল */
-        .app-card { 
-            background: white; padding: 15px; margin-bottom: 15px; 
-            border-radius: 10px; display: flex; justify-content: space-between; 
-            align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .install-btn { 
-            background: #007bff; color: white; text-decoration: none; 
-            padding: 10px 20px; border-radius: 5px; font-weight: bold;
-        }
-
-        /* নগদ উইথড্রয়াল ফর্ম স্টাইল */
-        .withdraw-section { 
-            background: #fff; padding: 20px; border-radius: 10px; 
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-top: 30px;
-            border-top: 5px solid #d12026;
-        }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        .nagad-btn { 
-            width: 100%; padding: 15px; background: #d12026; color: white; 
-            border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 16px;
-        }
+        body { font-family: Arial, sans-serif; margin: 0; padding-bottom: 60px; background: #f9f9f9; }
+        header { display: flex; justify-content: space-between; padding: 15px; background: #fff; border-bottom: 1px solid #ddd; position: sticky; top: 0; }
+        .search-icon { font-size: 20px; cursor: pointer; }
+        .video-card { background: #fff; margin-bottom: 10px; border-radius: 8px; overflow: hidden; }
+        .thumbnail { width: 100%; height: 200px; background: #ccc; object-fit: cover; }
+        .video-info { padding: 10px; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: #fff; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #ddd; }
+        .nav-item { text-align: center; font-size: 12px; color: #555; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2 style="text-align: center; color: #333;">অ্যাপ ইন্সটল করে আয় করুন</h2>
-    <div id="app-list">
-        <p style="text-align: center;">অ্যাপ লোড হচ্ছে...</p>
-    </div>
+<header>
+    <div style="font-weight: bold; font-size: 20px; color: red;">X World</div>
+    <div class="search-icon">🔍</div>
+</header>
 
-    <div class="withdraw-section">
-        <h3 style="color: #d12026; text-align: center; margin-top: 0;">নগদ উইথড্র (Nagad)</h3>
-        <p style="text-align: center; font-size: 14px; color: #666;">সর্বনিম্ন উত্তোলন: <b>১০০ টাকা</b></p>
-        
-        <input type="number" id="nagad-number" placeholder="আপনার নগদ নম্বর (017...)">
-        <input type="number" id="withdraw-amount" placeholder="টাকার পরিমাণ (কমপক্ষে ১০০)">
-        
-        <button class="nagad-btn" onclick="sendNagadRequest()">টাকা উত্তোলন করুন</button>
+<div class="video-list" id="videoContainer">
+    <div class="video-card">
+        <img src="thumb-sample.jpg" class="thumbnail">
+        <div class="video-info">
+            <h3 style="margin: 5px 0;">ভিডিওর টাইটেল এখানে থাকবে</h3>
+            <p style="font-size: 14px; color: #777;">ইউজার নেম • ২ দিন আগে</p>
+        </div>
     </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
-<script>
-    // আপনার Firebase Config এখানে বসান
-    const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    // ১. অ্যাপ লিস্ট লোড করা (সিরিয়াল অনুযায়ী)
-    function loadApps() {
-        const listDiv = document.getElementById('app-list');
-        db.collection("apps").orderBy("id", "asc").onSnapshot((querySnapshot) => {
-            listDiv.innerHTML = "";
-            if (querySnapshot.empty) {
-                listDiv.innerHTML = "<p style='text-align:center;'>কোনো অ্যাপ নেই।</p>";
-                return;
-            }
-            querySnapshot.forEach((doc) => {
-                const app = doc.data();
-                listDiv.innerHTML += `
-                    <div class="app-card">
-                        <div>
-                            <b style="font-size: 18px;">${app.id}. ${app.name}</b>
-                            <p style="margin: 5px 0; color: #28a745;">পুরস্কার: ${app.reward} টাকা</p>
-                        </div>
-                        <a href="${app.link}" target="_blank" class="install-btn">ইন্সটল</a>
-                    </div>`;
-            });
-        });
-    }
-
-    // ২. নগদ উইথড্র রিকোয়েস্ট পাঠানো (মিনিমাম ১০০ টাকা)
-    function sendNagadRequest() {
-        const phone = document.getElementById('nagad-number').value;
-        const amount = parseInt(document.getElementById('withdraw-amount').value);
-
-        if (phone.length < 11) {
-            alert("দয়া করে সঠিক নগদ নম্বর দিন।");
-            return;
-        }
-        if (isNaN(amount) || amount < 100) {
-            alert("দুঃখিত, সর্বনিম্ন ১০০ টাকা উইথড্র করা যাবে।");
-            return;
-        }
-
-        db.collection("withdrawals").add({
-            phone: phone,
-            amount: amount,
-            method: "Nagad",
-            status: "pending",
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        })
-        .then(() => {
-            alert("আপনার ১০০ টাকার উইথড্র রিকোয়েস্ট সফল হয়েছে! অ্যাডমিন চেক করে পেমেন্ট করবে।");
-            document.getElementById('nagad-number').value = "";
-            document.getElementById('withdraw-amount').value = "";
-        })
-        .catch((error) => alert("Error: " + error.message));
-    }
-
-    loadApps();
-</script>
+<div class="bottom-nav">
+    <div class="nav-item">🎬<br>Videos</div>
+    <div class="nav-item">👤<br>Profile</div>
+</div>
 
 </body>
 </html>

@@ -1,72 +1,77 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>X World | Video Platform</title>
+    <title>X World</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #f9f9f9; padding-bottom: 80px; }
-        header { background: #fff; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 1px 5px rgba(0,0,0,0.1); }
-        .logo { color: #ff0000; font-weight: bold; font-size: 22px; }
-        .search-container { flex-grow: 1; margin: 0 15px; position: relative; }
-        .search-box { width: 90%; padding: 8px 15px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
+        body { font-family: Roboto, Arial, sans-serif; margin: 0; background: #fff; padding-bottom: 70px; }
         
-        /* Video Card Style (YouTube Style) */
-        .feed { padding: 10px; }
-        .video-card { background: #fff; margin-bottom: 20px; width: 100%; border-radius: 12px; overflow: hidden; }
-        .main-video { width: 100%; height: 220px; background: #000; object-fit: cover; }
-        .video-info { padding: 12px; display: flex; gap: 12px; }
-        .uploader-img { width: 40px; height: 40px; border-radius: 50%; background: #ddd; cursor: pointer; }
-        .details { flex: 1; }
-        .v-title { font-weight: 600; font-size: 16px; margin: 0 0 5px 0; color: #0f0f0f; }
-        .v-meta { font-size: 13px; color: #606060; }
-        
-        /* Interactions */
-        .actions { display: flex; gap: 20px; padding: 10px; border-top: 1px solid #f1f1f1; }
-        .act-btn { cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px; color: #0f0f0f; }
-        .follow-btn { border: none; background: #0f0f0f; color: #fff; padding: 6px 15px; border-radius: 18px; font-weight: bold; cursor: pointer; }
+        /* Top Header */
+        header { position: sticky; top: 0; background: #fff; display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; z-index: 100; }
+        .logo { font-size: 22px; font-weight: bold; color: #000; letter-spacing: -1px; }
+        .header-icons { display: flex; gap: 20px; font-size: 20px; }
 
-        /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: #fff; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #e5e5e5; }
-        .nav-tab { text-align: center; color: #0f0f0f; font-size: 11px; cursor: pointer; flex: 1; }
-        .nav-icon { font-size: 22px; margin-bottom: 2px; }
-        .upload-circle { background: #f2f2f2; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; margin-top: -30px; border: 4px solid #fff; box-shadow: 0 -2px 5px rgba(0,0,0,0.05); }
+        /* Video Feed */
+        .video-card { width: 100%; margin-bottom: 20px; }
+        .thumbnail { width: 100%; aspect-ratio: 16/9; background: #000; object-fit: cover; }
+        .v-details { display: flex; padding: 12px; gap: 12px; }
+        .v-avatar { width: 36px; height: 36px; border-radius: 50%; background: #eee; }
+        .v-text { flex: 1; }
+        .v-title { font-size: 16px; font-weight: 500; margin: 0 0 4px 0; line-height: 1.4; color: #0f0f0f; }
+        .v-meta { font-size: 12px; color: #606060; }
+
+        /* Bottom Navigation Bar (YouTube Style) */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 55px; background: #fff; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #e5e5e5; }
+        .nav-item { text-align: center; font-size: 10px; color: #0f0f0f; cursor: pointer; }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 2px; }
+        .plus-icon { font-size: 35px !important; }
+
+        /* Login Overlay */
+        #loginOverlay { position: fixed; inset: 0; background: #fff; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; display: none; }
+        .login-btn { padding: 10px 20px; background: #065fd4; color: #fff; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
+<div id="loginOverlay">
+    <h1 style="color:red">X World</h1>
+    <p>ভিডিও দেখতে লগইন করুন</p>
+    <button class="login-btn" onclick="login()">Sign in with Google</button>
+</div>
+
 <header>
     <div class="logo">X World</div>
-    <div class="search-container">
-        <input type="text" class="search-box" placeholder="সার্চ করুন...">
+    <div class="header-icons">
+        <span>🔍</span>
+        <span>🔔</span>
     </div>
-    <div id="userProfile" onclick="login()">👤</div>
 </header>
 
-<div class="feed" id="videoFeed">
+<div id="videoFeed">
     </div>
 
 <nav class="bottom-nav">
-    <div class="nav-tab" onclick="location.reload()">
-        <div class="nav-icon">🏠</div>Home
+    <div class="nav-item" onclick="window.scrollTo(0,0)"><i>🏠</i>Home</div>
+    <div class="nav-item"><i>🩳</i>Shorts</div>
+    <div class="nav-item" onclick="document.getElementById('fileInput').click()">
+        <i class="plus-icon">⊕</i>
     </div>
-    <div class="nav-tab" onclick="document.getElementById('fileInput').click()">
-        <div class="upload-circle">+</div>
-    </div>
-    <div class="nav-tab" id="profileBtn">
-        <div class="nav-icon">👤</div>Profile
+    <div class="nav-item"><i>📺</i>Subscriptions</div>
+    <div class="nav-item" id="userBtn" onclick="showProfile()">
+        <i id="userIcon">👤</i>You
     </div>
 </nav>
 
-<input type="file" id="fileInput" accept="video/*" style="display: none;" onchange="uploadVideo(event)">
+<input type="file" id="fileInput" accept="video/*" style="display: none;" onchange="handleUpload(event)">
 
 <script>
-    // আপনার প্রোভাইড করা কনফিগ
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyBWhYvIKGHfDO4NrH0G5N692FljzD_wmZc",
       authDomain: "misti-am.firebaseapp.com",
@@ -82,79 +87,73 @@
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    // ১. জিমেইল লগইন
+    // ১. অটো লগইন চেক
+    auth.onAuthStateChanged(user => {
+        if (!user) {
+            document.getElementById('loginOverlay').style.display = 'flex';
+        } else {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('userIcon').innerHTML = `<img src="${user.photoURL}" style="width:24px; border-radius:50%">`;
+            loadVideos();
+        }
+    });
+
     function login() {
         const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).then(res => {
-            alert("স্বাগতম " + res.user.displayName);
-            location.reload();
-        });
+        auth.signInWithPopup(provider);
     }
 
-    // ২. ভিডিও আপলোড (সরাসরি গ্যালারি থেকে)
-    async function uploadVideo(event) {
-        const user = auth.currentUser;
-        if(!user) return alert("আগে জিমেইল দিয়ে লগইন করুন!");
-        
+    // ২. ইউটিউব স্টাইলে ভিডিও আপলোড (টাইটেলসহ)
+    async function handleUpload(event) {
         const file = event.target.files[0];
-        const title = prompt("ভিডিওর একটি টাইটেল দিন:");
-        if(!title) return;
+        const title = prompt("Enter video title:");
+        if(!title || !file) return;
 
-        const ref = storage.ref(`videos/${Date.now()}_${file.name}`);
-        alert("ভিডিও আপলোড হচ্ছে... দয়া করে অপেক্ষা করুন।");
-        
+        alert("Uploading...");
+        const ref = storage.ref(`videos/${Date.now()}`);
         await ref.put(file);
         const url = await ref.getDownloadURL();
 
         await db.collection("videos").add({
             title: title,
             url: url,
-            uid: user.uid,
-            uploader: user.displayName,
-            photo: user.photoURL,
+            uploader: auth.currentUser.displayName,
+            avatar: auth.currentUser.photoURL,
             views: 0,
             time: firebase.firestore.FieldValue.serverTimestamp()
         });
-        alert("আপলোড সফল হয়েছে!");
-        location.reload();
+        alert("Upload Done!");
     }
 
     // ৩. ভিডিও ফিড লোড করা
-    db.collection("videos").orderBy("time", "desc").onSnapshot(snap => {
-        const feed = document.getElementById('videoFeed');
-        feed.innerHTML = "";
-        snap.forEach(doc => {
-            const data = doc.data();
-            feed.innerHTML += `
-                <div class="video-card">
-                    <video class="main-video" controls src="${data.url}"></video>
-                    <div class="video-info">
-                        <img src="${data.photo}" class="uploader-img" onclick="alert('ID: ${data.uploader}')">
-                        <div class="details">
-                            <p class="v-title">${data.title}</p>
-                            <p class="v-meta">${data.uploader} • ${data.views || 0} views</p>
+    function loadVideos() {
+        db.collection("videos").orderBy("time", "desc").onSnapshot(snap => {
+            const feed = document.getElementById('videoFeed');
+            feed.innerHTML = "";
+            snap.forEach(doc => {
+                const v = doc.data();
+                feed.innerHTML += `
+                    <div class="video-card">
+                        <video class="thumbnail" src="${v.url}" controls></video>
+                        <div class="v-details">
+                            <img class="v-avatar" src="${v.avatar}">
+                            <div class="v-text">
+                                <p class="v-title">${v.title}</p>
+                                <p class="v-meta">${v.uploader} • ${v.views} views</p>
+                            </div>
+                            <span style="font-size:20px">⋮</span>
                         </div>
-                        <button class="follow-btn" onclick="toggleFollow(this)">Follow</button>
-                    </div>
-                    <div class="actions">
-                        <div class="act-btn">👍 Like</div>
-                        <div class="act-btn">💬 Comment</div>
-                        <div class="act-btn">🔗 Share</div>
-                    </div>
-                </div>
-            `;
+                    </div>`;
+            });
         });
-    });
+    }
 
-    function toggleFollow(btn) {
-        if(btn.innerText === "Follow") {
-            btn.innerText = "Following";
-            btn.style.background = "#ccc";
-        } else {
-            btn.innerText = "Follow";
-            btn.style.background = "#0f0f0f";
-        }
+    function showProfile() {
+        const user = auth.currentUser;
+        alert(`Name: ${user.displayName}\nEmail: ${user.email}`);
     }
 </script>
+
 </body>
-</html>
+    </html>
+        

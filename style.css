@@ -1,0 +1,13 @@
+body{
+margin:0;
+font-family:Arial;
+background:#f1f1f1;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+background:red;
+color:white;
+padding:10px;
+}

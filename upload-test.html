@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>X World Upload Test</title>
+</head>
+<body>
+
+<h2>Upload Video with Title</h2>
+
+<input type="text" id="title" placeholder="Video Title"><br><br>
+<input type="file" id="videoFile"><br><br>
+<button onclick="uploadVideo()">Upload</button>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBWhYvIKGHfDO4NrH0G5N692FljzD_wmZc",
+  authDomain: "misti-am.firebaseapp.com",
+  projectId: "misti-am",
+  storageBucket: "misti-am.firebasestorage.app",
+  messagingSenderId: "335857181187",
+  appId: "1:335857181187:web:ce34124f9daea3a4262436"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+async function uploadVideo(){
+  const file = document.getElementById("videoFile").files[0];
+  const title = document.getElementById("title").value.trim();
+  
+  if(!file || !title){
+    alert("Please select a video and enter a title!");
+    return;
+  }
+
+  // Upload to Firebase Storage
+  const storageRef = ref(storage, "videos/"+file.name);
+  await uploadBytes(storageRef, file);
+  const url = await getDownloadURL(storageRef);
+
+  // Save in Firestore
+  await addDoc(collection(db,"videos"),{
+    title: title,
+    url: url,
+    likes:0,
+    views:0,
+    date: Date.now()
+  });
+
+  alert("Video uploaded successfully!");
+  
+  // Clear inputs
+  document.getElementById("title").value = "";
+  document.getElementById("videoFile").value = "";
+}
+</script>
+
+</body>
+</html>

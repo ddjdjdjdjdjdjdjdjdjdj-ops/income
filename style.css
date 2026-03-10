@@ -1,1 +1,25 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f7f9fc; color: #333; line-height: 1.6; padding: 15px; }
+.container { max-width: 500px; margin: 0 auto; }
+
+/* Header */
+.header { background: linear-gradient(135deg, #ff9800, #ff5722); color: white; padding: 30px 15px; border-radius: 20px; text-align: center; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3); }
+.header h1 { font-size: 28px; text-transform: uppercase; letter-spacing: 1px; }
+.balance-card { background: white; color: #2ecc71; display: inline-block; padding: 10px 25px; border-radius: 50px; margin-top: 15px; font-size: 22px; font-weight: bold; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+/* Ad Grid */
+.ad-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 25px; }
+.ad-btn { background: #fff; border: 2px solid #4caf50; color: #4caf50; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 15px; }
+.ad-btn:hover { background: #e8f5e9; }
+.ad-btn:disabled { background: #bdc3c7; border-color: #bdc3c7; color: #fff; cursor: not-allowed; }
+
+/* Action Cards */
+.action-card { background: white; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.action-card h3 { font-size: 18px; margin-bottom: 15px; color: #555; }
+.share-group { display: flex; justify-content: space-between; gap: 10px; }
+.btn-wa { background: #25D366; color: white; flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; }
+.btn-tg { background: #0088cc; color: white; flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; }
+.btn-join { background: #673ab7; color: white; width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; margin-top: 15px; }
+.divider { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
+.channel-link { margin-top: 8px; font-size: 13px; color: #888; }
 

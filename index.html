@@ -1,138 +1,136 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>X World</title>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
-    <style>
-        body { font-family: Roboto, Arial, sans-serif; margin: 0; background: #0f0f0f; color: #fff; padding-bottom: 70px; }
-        header { position: sticky; top: 0; background: #0f0f0f; display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; z-index: 100; border-bottom: 1px solid #272727; }
-        .logo { font-size: 20px; font-weight: bold; color: #fff; }
-        .logo span { color: red; }
-        
-        /* Video Card Style */
-        .video-card { width: 100%; margin-bottom: 10px; border-bottom: 5px solid #272727; }
-        .v-player { width: 100%; aspect-ratio: 16/9; background: #000; border: none; }
-        .v-details { display: flex; padding: 12px; gap: 12px; }
-        .v-avatar { width: 40px; height: 40px; border-radius: 50%; background: #333; cursor: pointer; }
-        .v-text { flex: 1; }
-        .v-title { font-size: 15px; font-weight: 500; margin: 0 0 5px 0; color: #f1f1f1; }
-        .v-meta { font-size: 12px; color: #aaa; }
+<meta charset="UTF-8">
+<title>X World</title>
 
-        /* Bottom Navigation */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: #0f0f0f; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #272727; }
-        .nav-item { text-align: center; font-size: 10px; color: #fff; flex: 1; cursor: pointer; }
-        .nav-item i { font-size: 24px; display: block; margin-bottom: 2px; }
-        .plus-btn { font-size: 35px !important; color: #fff; }
+<style>
 
-        /* Hide content until login */
-        #mainApp { display: none; }
-    </style>
+body{
+margin:0;
+font-family:Arial;
+background:#f1f1f1;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:10px;
+background:red;
+color:white;
+}
+
+.search input{
+padding:6px;
+border:none;
+}
+
+#videos{
+padding:20px;
+}
+
+video{
+width:100%;
+margin-bottom:20px;
+}
+
+</style>
+
 </head>
+
 <body>
 
-<div id="mainApp">
-    <header>
-        <div class="logo"><span>▶</span> X World</div>
-        <div style="font-size: 20px;">🔍 &nbsp; 🔔</div>
-    </header>
+<header class="header">
 
-    <div id="videoFeed"></div>
+<h2>X World</h2>
 
-    <nav class="bottom-nav">
-        <div class="nav-item" onclick="location.reload()"><i>🏠</i>Home</div>
-        <div class="nav-item"><i>🩳</i>Shorts</div>
-        <div class="nav-item" onclick="document.getElementById('fileInput').click()">
-            <i class="plus-btn">+</i>
-        </div>
-        <div class="nav-item"><i>📺</i>Subs</div>
-        <div class="nav-item" id="userBtn">
-            <i id="userIcon">👤</i>You
-        </div>
-    </nav>
+<div class="search">
+
+<input id="search" placeholder="Search video or username">
+
+<button>🔍</button>
+
 </div>
 
-<input type="file" id="fileInput" accept="video/*" style="display: none;" onchange="handleUpload(event)">
+<div id="user"></div>
 
-<script>
-    // Tumar Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBWhYvIKGHfDO4NrH0G5N692FljzD_wmZc",
-      authDomain: "misti-am.firebaseapp.com",
-      projectId: "misti-am",
-      storageBucket: "misti-am.firebasestorage.app",
-      messagingSenderId: "335857181187",
-      appId: "1:335857181187:web:ce34124f9daea3a4262436"
-    };
+</header>
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    const storage = firebase.storage();
+<div id="videos"></div>
 
-    // DOKAR SATHE SATHE LOGIN POPUP
-    auth.onAuthStateChanged(user => {
-        if (!user) {
-            login(); // User na thakle login popup khulbe
-        } else {
-            document.getElementById('mainApp').style.display = 'block';
-            document.getElementById('userIcon').innerHTML = `<img src="${user.photoURL}" style="width:24px; border-radius:50%">`;
-            loadVideos();
-        }
-    });
+<script type="module">
 
-    function login() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).catch(err => alert("Login Error: " + err.message));
-    }
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-    async function handleUpload(event) {
-        const file = event.target.files[0];
-        const title = prompt("Video Title Likho:");
-        if(!title || !file) return;
+const firebaseConfig = {
 
-        alert("Upload shuru hoise...");
-        const ref = storage.ref(`videos/${Date.now()}`);
-        await ref.put(file);
-        const url = await ref.getDownloadURL();
+apiKey: "AIzaSyBWhYvIKGHfDO4NrH0G5N692FljzD_wmZc",
+authDomain: "misti-am.firebaseapp.com",
+projectId: "misti-am",
+storageBucket: "misti-am.firebasestorage.app",
+messagingSenderId: "335857181187",
+appId: "1:335857181187:web:ce34124f9daea3a4262436"
 
-        await db.collection("videos").add({
-            title: title,
-            url: url,
-            uploader: auth.currentUser.displayName,
-            avatar: auth.currentUser.photoURL,
-            views: Math.floor(Math.random() * 500) + "K",
-            time: "Just now"
-        });
-        alert("Upload Done!");
-    }
+};
 
-    function loadVideos() {
-        db.collection("videos").onSnapshot(snap => {
-            const feed = document.getElementById('videoFeed');
-            feed.innerHTML = "";
-            snap.forEach(doc => {
-                const v = doc.data();
-                feed.innerHTML += `
-                    <div class="video-card">
-                        <video class="v-player" src="${v.url}" controls></video>
-                        <div class="v-details">
-                            <img class="v-avatar" src="${v.avatar}">
-                            <div class="v-text">
-                                <p class="v-title">${v.title}</p>
-                                <p class="v-meta">${v.uploader} • ${v.views} views • ${v.time}</p>
-                            </div>
-                            <span>⋮</span>
-                        </div>
-                    </div>`;
-            });
-        });
-    }
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const provider = new GoogleAuthProvider();
+
+signInWithPopup(auth,provider)
+
+.then(result=>{
+
+const user=result.user;
+
+document.getElementById("user").innerHTML=
+`
+<img src="${user.photoURL}" width="35" style="border-radius:50%">
+`;
+
+})
+
+async function loadVideos(){
+
+const querySnapshot = await getDocs(collection(db,"videos"));
+
+let html="";
+
+querySnapshot.forEach(doc=>{
+
+html+=`
+
+<div>
+
+<h3>${doc.data().title}</h3>
+
+<video controls>
+
+<source src="${doc.data().url}">
+
+</video>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("videos").innerHTML=html;
+
+}
+
+loadVideos();
+
 </script>
+
 </body>
+
 </html>

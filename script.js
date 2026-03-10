@@ -1,4 +1,3 @@
-// Apnar deya 20-ti Links
 const adLinks = [
     "https://omg10.com/4/10692959", "https://omg10.com/4/10708147", "https://omg10.com/4/10708152",
     "https://omg10.com/4/10708143", "https://omg10.com/4/10678359", "https://omg10.com/4/10692954",
@@ -10,27 +9,34 @@ const adLinks = [
 ];
 
 let balance = parseInt(localStorage.getItem('mistiBalance')) || 0;
-const adGrid = document.getElementById('adGrid');
 const balanceDisplay = document.getElementById('balance');
-
-// Check if user came from a referral link
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.has('ref') && !localStorage.getItem('isReferred')) {
-    balance += 10;
-    localStorage.setItem('isReferred', 'true');
-    saveData();
-}
+const adGrid = document.getElementById('adGrid');
+const tgBtn = document.getElementById('tgJoinBtn');
 
 function updateUI() {
     balanceDisplay.innerText = balance;
-}
-
-function saveData() {
     localStorage.setItem('mistiBalance', balance);
-    updateUI();
 }
 
-// Ad Buttons setup
+// Telegram Join - strictly once
+function checkTgStatus() {
+    if (localStorage.getItem('tgJoined')) {
+        tgBtn.disabled = true;
+        tgBtn.innerText = "জয়েন করেছেন (১০ টাকা যোগ হয়েছে)";
+    }
+}
+
+function joinTelegram() {
+    if (!localStorage.getItem('tgJoined')) {
+        window.open("https://t.me/mistiam5", '_blank');
+        balance += 10;
+        localStorage.setItem('tgJoined', 'true');
+        updateUI();
+        checkTgStatus();
+    }
+}
+
+// Ads Setup
 adLinks.forEach((link, index) => {
     const adId = index + 1;
     const btn = document.createElement('button');
@@ -42,12 +48,12 @@ adLinks.forEach((link, index) => {
 
     if (isLocked) {
         btn.disabled = true;
-        btn.innerText = "Done (24h)";
+        btn.innerText = "দেখা শেষ";
     } else {
-        btn.innerText = `Ad ${adId}`;
+        btn.innerText = `অ্যাড ${adId}`;
         btn.onclick = () => {
             window.open(link, '_blank');
-            let timeLeft = 300;
+            let timeLeft = 300; 
             btn.disabled = true;
             const timer = setInterval(() => {
                 let mins = Math.floor(timeLeft / 60);
@@ -57,8 +63,8 @@ adLinks.forEach((link, index) => {
                     clearInterval(timer);
                     balance += 5;
                     localStorage.setItem(`ad_${adId}_time`, Date.now());
-                    saveData();
-                    btn.innerText = "Done (24h)";
+                    updateUI();
+                    btn.innerText = "দেখা শেষ";
                 }
                 timeLeft--;
             }, 1000);
@@ -67,34 +73,13 @@ adLinks.forEach((link, index) => {
     adGrid.appendChild(btn);
 });
 
-// Telegram Join - Only once logic
-const tgBtn = document.querySelector('.btn-join');
-if (localStorage.getItem('tgJoined')) {
-    tgBtn.disabled = true;
-    tgBtn.innerText = "Joined (10 Taka Added)";
-    tgBtn.style.background = "#9e9e9e";
-}
-
-function joinTelegram() {
-    if (!localStorage.getItem('tgJoined')) {
-        window.open("https://t.me/mistiam5", '_blank');
-        balance += 10;
-        localStorage.setItem('tgJoined', 'true');
-        saveData();
-        tgBtn.disabled = true;
-        tgBtn.innerText = "Joined (10 Taka Added)";
-        tgBtn.style.background = "#9e9e9e";
-    }
-}
-
-// Refer Share (generates a ref link)
 function share(platform) {
-    const mySiteUrl = window.location.href.split('?')[0]; // Current URL
-    const refLink = `${mySiteUrl}?ref=user123`; // Refer link structure
-    const msg = encodeURIComponent("Misti AM-e join kore 10 taka bonus nin! Link: " + refLink);
+    const msg = encodeURIComponent("মিষ্টি AM-এ জয়েন করুন: " + window.location.href);
     const url = platform === 'whatsapp' ? `https://wa.me/?text=${msg}` : `https://t.me/share/url?url=${msg}`;
     window.open(url, '_blank');
+    // NO balance added for refer
 }
 
 updateUI();
-    
+checkTgStatus();
+            

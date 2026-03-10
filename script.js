@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, set, get, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBWhYvIKGHfDO4NrH0G5N692FljzD_wmZc",
@@ -14,13 +14,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// User Identification (LocalStorage-e unique ID thakbe)
-let userId = localStorage.getItem('mistiUserId');
-if (!userId) {
-    userId = "User_" + Math.floor(Math.random() * 1000000);
-    localStorage.setItem('mistiUserId', userId);
-}
+let userId = localStorage.getItem('mistiUserId') || "User_" + Math.floor(Math.random() * 1000000);
+localStorage.setItem('mistiUserId', userId);
 
+let balance = 0;
+const balanceDisplay = document.getElementById('balance');
+const adGrid = document.getElementById('adGrid');
+
+// আপনার অ্যাড লিঙ্কগুলো
 const adLinks = [
     "https://omg10.com/4/10692959", "https://omg10.com/4/10708147", "https://omg10.com/4/10708152",
     "https://omg10.com/4/10708143", "https://omg10.com/4/10678359", "https://omg10.com/4/10692954",
@@ -31,74 +32,83 @@ const adLinks = [
     "https://omg10.com/4/10692956", "https://omg10.com/4/10708149"
 ];
 
-let balance = 0;
-const balanceDisplay = document.getElementById('balance');
-const adGrid = document.getElementById('adGrid');
-
-// Database theke balance ana
+// ব্যালেন্স লোড করা
 get(ref(db, 'users/' + userId)).then((snapshot) => {
     if (snapshot.exists()) {
         balance = snapshot.val().balance || 0;
+        balanceDisplay.innerText = balance;
     } else {
-        set(ref(db, 'users/' + userId), { balance: 0, status: "active" });
+        set(ref(db, 'users/' + userId), { balance: 0 });
     }
-    balanceDisplay.innerText = balance;
 });
 
+// ব্যালেন্স আপডেট
 function syncBalance() {
     update(ref(db, 'users/' + userId), { balance: balance });
     balanceDisplay.innerText = balance;
 }
 
-// Ad Button Logic
-adLinks.forEach((link, index) => {
-    const adId = index + 1;
-    const btn = document.createElement('button');
-    btn.className = 'ad-btn';
-    
-    const lastClick = localStorage.getItem(`ad_${adId}_time`);
-    const isLocked = lastClick && (Date.now() - lastClick < 24 * 60 * 60 * 1000);
+// অ্যাড বাটন তৈরি
+if (adGrid) {
+    adLinks.forEach((link, index) => {
+        const adId = index + 1;
+        const btn = document.createElement('button');
+        btn.className = 'ad-btn';
+        
+        const lastClick = localStorage.getItem(`ad_${adId}_time`);
+        const isLocked = lastClick && (Date.now() - lastClick < 24 * 60 * 60 * 1000);
 
-    if (isLocked) {
-        btn.disabled = true;
-        btn.innerText = "দেখা শেষ";
-    } else {
-        btn.innerText = `অ্যাড ${adId}`;
-        btn.onclick = () => {
-            window.open(link, '_blank');
-            let timeLeft = 300; 
+        if (isLocked) {
             btn.disabled = true;
-            const timer = setInterval(() => {
-                let mins = Math.floor(timeLeft / 60);
-                let secs = timeLeft % 60;
-                btn.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    balance += 5;
-                    localStorage.setItem(`ad_${adId}_time`, Date.now());
-                    syncBalance();
-                    btn.innerText = "দেখা শেষ";
-                }
-                timeLeft--;
-            }, 1000);
-        };
-    }
-    adGrid.appendChild(btn);
-});
-
-// Telegram Logic
-window.joinTelegram = function() {
-    if (!localStorage.getItem('tgJoined')) {
-        window.open("https://t.me/mistiam5", '_blank');
-        balance += 10;
-        localStorage.setItem('tgJoined', 'true');
-        syncBalance();
-    }
+            btn.innerText = "দেখা শেষ";
+        } else {
+            btn.innerText = `অ্যাড ${adId}`;
+            btn.onclick = () => {
+                window.open(link, '_blank');
+                let timer = 5; // ৫ সেকেন্ডের টাইমার
+                btn.disabled = true;
+                const interval = setInterval(() => {
+                    btn.innerText = `অপেক্ষা করুন ${timer}s`;
+                    if (timer <= 0) {
+                        clearInterval(interval);
+                        balance += 5;
+                        localStorage.setItem(`ad_${adId}_time`, Date.now());
+                        syncBalance();
+                        btn.innerText = "দেখা শেষ";
+                    }
+                    timer--;
+                }, 1000);
+            };
+        }
+        adGrid.appendChild(btn);
+    });
 }
 
-window.share = function(platform) {
-    const text = encodeURIComponent("মিষ্টি AM-এ জয়েন করুন: " + window.location.href);
-    const url = platform === 'whatsapp' ? `https://wa.me/?text=${text}` : `https://t.me/share/url?url=${text}`;
-    window.open(url, '_blank');
-                        }
-                        
+// উইথড্র ফাংশন
+window.withdrawMoney = function() {
+    const num = document.getElementById('withdrawNumber').value;
+    const amount = parseInt(document.getElementById('withdrawAmount').value);
+    const method = document.getElementById('paymentMethod').value;
+
+    if (amount > balance || amount < 40) {
+        alert("ব্যালেন্স কম বা সর্বনিম্ন ৪০ টাকা লাগবে।");
+        return;
+    }
+
+    balance -= amount;
+    syncBalance();
+
+    push(ref(db, 'withdrawRequests'), {
+        userId: userId,
+        number: num,
+        amount: amount,
+        method: method,
+        time: new Date().toLocaleString()
+    }).then(() => alert("অনুরোধ পাঠানো হয়েছে!"));
+};
+
+window.share = (p) => {
+    const url = encodeURIComponent(window.location.href);
+    window.open(p === 'whatsapp' ? `https://wa.me/?text=${url}` : `https://t.me/share/url?url=${url}`);
+};
+              

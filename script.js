@@ -13,20 +13,30 @@ let balance = parseInt(localStorage.getItem('mistiBalance')) || 0;
 const adGrid = document.getElementById('adGrid');
 const balanceDisplay = document.getElementById('balance');
 
-// Balance Update UI
-function updateUI() {
-    balanceDisplay.innerText = balance;
-    localStorage.setItem('mistiBalance', balance);
+// Check if user came from a referral link
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has('ref') && !localStorage.getItem('isReferred')) {
+    balance += 10;
+    localStorage.setItem('isReferred', 'true');
+    saveData();
 }
 
-// 20-ti Ad Button toiri kora
+function updateUI() {
+    balanceDisplay.innerText = balance;
+}
+
+function saveData() {
+    localStorage.setItem('mistiBalance', balance);
+    updateUI();
+}
+
+// Ad Buttons setup
 adLinks.forEach((link, index) => {
     const adId = index + 1;
     const btn = document.createElement('button');
     btn.id = `adBtn${adId}`;
     btn.className = 'ad-btn';
     
-    // Check 24 hour limit logic
     const lastClick = localStorage.getItem(`ad_${adId}_time`);
     const isLocked = lastClick && (Date.now() - lastClick < 24 * 60 * 60 * 1000);
 
@@ -35,53 +45,56 @@ adLinks.forEach((link, index) => {
         btn.innerText = "Done (24h)";
     } else {
         btn.innerText = `Ad ${adId}`;
-        btn.onclick = () => startAdProcess(adId, link);
+        btn.onclick = () => {
+            window.open(link, '_blank');
+            let timeLeft = 300;
+            btn.disabled = true;
+            const timer = setInterval(() => {
+                let mins = Math.floor(timeLeft / 60);
+                let secs = timeLeft % 60;
+                btn.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    balance += 5;
+                    localStorage.setItem(`ad_${adId}_time`, Date.now());
+                    saveData();
+                    btn.innerText = "Done (24h)";
+                }
+                timeLeft--;
+            }, 1000);
+        };
     }
     adGrid.appendChild(btn);
 });
 
-function startAdProcess(id, link) {
-    const btn = document.getElementById(`adBtn${id}`);
-    window.open(link, '_blank'); // Link open hobe
-    
-    let timeLeft = 300; // 5 minute = 300 seconds
-    btn.disabled = true;
-
-    const timer = setInterval(() => {
-        let mins = Math.floor(timeLeft / 60);
-        let secs = timeLeft % 60;
-        btn.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            balance += 5;
-            localStorage.setItem(`ad_${id}_time`, Date.now()); // Save click time
-            updateUI();
-            btn.innerText = "Done (24h)";
-        }
-        timeLeft--;
-    }, 1000);
+// Telegram Join - Only once logic
+const tgBtn = document.querySelector('.btn-join');
+if (localStorage.getItem('tgJoined')) {
+    tgBtn.disabled = true;
+    tgBtn.innerText = "Joined (10 Taka Added)";
+    tgBtn.style.background = "#9e9e9e";
 }
 
 function joinTelegram() {
-    window.open("https://t.me/mistiam5", '_blank');
     if (!localStorage.getItem('tgJoined')) {
+        window.open("https://t.me/mistiam5", '_blank');
         balance += 10;
         localStorage.setItem('tgJoined', 'true');
-        updateUI();
+        saveData();
+        tgBtn.disabled = true;
+        tgBtn.innerText = "Joined (10 Taka Added)";
+        tgBtn.style.background = "#9e9e9e";
     }
 }
 
+// Refer Share (generates a ref link)
 function share(platform) {
-    const shareText = encodeURIComponent("Misti AM-e ad dekhe income korun! Join: https://t.me/mistiam5");
-    const url = platform === 'whatsapp' ? `https://wa.me/?text=${shareText}` : `https://t.me/share/url?url=${shareText}`;
+    const mySiteUrl = window.location.href.split('?')[0]; // Current URL
+    const refLink = `${mySiteUrl}?ref=user123`; // Refer link structure
+    const msg = encodeURIComponent("Misti AM-e join kore 10 taka bonus nin! Link: " + refLink);
+    const url = platform === 'whatsapp' ? `https://wa.me/?text=${msg}` : `https://t.me/share/url?url=${msg}`;
     window.open(url, '_blank');
-    
-    // Referral bonus (click korlei 10 taka)
-    balance += 10;
-    updateUI();
 }
 
-// Initial UI load
 updateUI();
-                
+                                   

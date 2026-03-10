@@ -3,39 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>মিষ্টি AM - ইনকাম করুন</title>
-    <link rel="stylesheet" href="style.css">
+    <title>মিষ্টি AM</title>
+    <link rel="stylesheet" href="style.css?v=2.0">
 </head>
 <body>
 
     <div class="header-card">
-        <h1>মিষ্টি AM</h1>
+        <h1>মিষ্টি AM 🥭</h1>
         <div class="balance-box">
             ব্যালেন্স: <span id="balance">0</span> টাকা
         </div>
     </div>
 
+    <div id="tgJoinSection">
+        <div class="refer-card" style="margin-bottom: 20px;">
+            <h3>টেলিগ্রাম চ্যানেলে জয়েন করে ১০ টাকা পান! 🎁</h3>
+            <button onclick="claimTelegramBonus()" style="background: #0088cc; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer;">
+                টেলিগ্রাম জয়েন করুন
+            </button>
+        </div>
+    </div>
+
     <div id="adGrid" class="ad-grid"></div>
 
-    <div class="withdraw-section">
+    <div class="withdraw-card">
         <h3>টাকা উত্তোলন</h3>
-        <select id="paymentMethod">
-            <option value="Bkash">বিকাশ (Bkash)</option>
-            <option value="Nagad">নগদ (Nagad)</option>
+        <select disabled style="background: #f9f9f9; cursor: not-allowed;">
+            <option>বিকাশ (Bkash)</option>
+            <option>নগদ (Nagad)</option>
         </select>
-        <input type="text" id="withdrawNumber" placeholder="নাম্বার দিন">
-        <input type="number" id="withdrawAmount" placeholder="টাকার পরিমাণ">
-        <button onclick="withdrawMoney()" id="withdrawBtn">টাকা তুলুন</button>
+        <input type="text" placeholder="বিকাশ/নগদ নাম্বার" disabled style="background: #f9f9f9; cursor: not-allowed;">
+        <input type="text" placeholder="সর্বনিম্ন ১০০০ টাকা লাগবে" disabled style="background: #ffebee; color: red; font-weight: bold;">
+        <button style="background: #ccc; color: #666; border: none; width: 100%; padding: 15px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: not-allowed;">
+            টাকা তুলুন (মিনিমাম ১০০০)
+        </button>
     </div>
 
-    <div class="refer-section">
+    <div class="refer-card">
         <h3>রেফার অপশন</h3>
-        <button onclick="share('whatsapp')" style="background:#25D366">WhatsApp Refer</button>
-        <button onclick="share('telegram')" style="background:#0088cc">Telegram Refer</button>
-        <p>রেফার করে ১০ টাকা ইনকাম করুন</p>
+        <p style="color: #FF512F; font-weight: bold;">রেফার করে ১০ টাকা ইনকাম করুন</p>
+        <div class="share-btns" style="display: flex; gap: 10px;">
+            <button onclick="shareReferral()" style="background: #25D366; color: white; border: none; padding: 12px; border-radius: 10px; flex: 1; cursor: pointer;">WhatsApp</button>
+            <button onclick="shareReferral()" style="background: #0088cc; color: white; border: none; padding: 12px; border-radius: 10px; flex: 1; cursor: pointer;">Telegram</button>
+        </div>
     </div>
 
-    <script type="module" src="script.js"></script>
+    <script type="module" src="script.js?v=2.0"></script>
 </body>
 </html>
 

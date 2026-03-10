@@ -1,3 +1,26 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBWhYvIKGHfDO4NrH0G5N692FljzD_wmZc",
+  authDomain: "misti-am.firebaseapp.com",
+  projectId: "misti-am",
+  storageBucket: "misti-am.firebasestorage.app",
+  messagingSenderId: "335857181187",
+  appId: "1:335857181187:web:ce34124f9daea3a4262436",
+  measurementId: "G-2DEXZT0L85"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// User Identification (LocalStorage-e unique ID thakbe)
+let userId = localStorage.getItem('mistiUserId');
+if (!userId) {
+    userId = "User_" + Math.floor(Math.random() * 1000000);
+    localStorage.setItem('mistiUserId', userId);
+}
+
 const adLinks = [
     "https://omg10.com/4/10692959", "https://omg10.com/4/10708147", "https://omg10.com/4/10708152",
     "https://omg10.com/4/10708143", "https://omg10.com/4/10678359", "https://omg10.com/4/10692954",
@@ -8,39 +31,29 @@ const adLinks = [
     "https://omg10.com/4/10692956", "https://omg10.com/4/10708149"
 ];
 
-let balance = parseInt(localStorage.getItem('mistiBalance')) || 0;
+let balance = 0;
 const balanceDisplay = document.getElementById('balance');
 const adGrid = document.getElementById('adGrid');
-const tgBtn = document.getElementById('tgJoinBtn');
 
-function updateUI() {
+// Database theke balance ana
+get(ref(db, 'users/' + userId)).then((snapshot) => {
+    if (snapshot.exists()) {
+        balance = snapshot.val().balance || 0;
+    } else {
+        set(ref(db, 'users/' + userId), { balance: 0, status: "active" });
+    }
     balanceDisplay.innerText = balance;
-    localStorage.setItem('mistiBalance', balance);
+});
+
+function syncBalance() {
+    update(ref(db, 'users/' + userId), { balance: balance });
+    balanceDisplay.innerText = balance;
 }
 
-// Telegram Join - strictly once
-function checkTgStatus() {
-    if (localStorage.getItem('tgJoined')) {
-        tgBtn.disabled = true;
-        tgBtn.innerText = "জয়েন করেছেন (১০ টাকা যোগ হয়েছে)";
-    }
-}
-
-function joinTelegram() {
-    if (!localStorage.getItem('tgJoined')) {
-        window.open("https://t.me/mistiam5", '_blank');
-        balance += 10;
-        localStorage.setItem('tgJoined', 'true');
-        updateUI();
-        checkTgStatus();
-    }
-}
-
-// Ads Setup
+// Ad Button Logic
 adLinks.forEach((link, index) => {
     const adId = index + 1;
     const btn = document.createElement('button');
-    btn.id = `adBtn${adId}`;
     btn.className = 'ad-btn';
     
     const lastClick = localStorage.getItem(`ad_${adId}_time`);
@@ -63,7 +76,7 @@ adLinks.forEach((link, index) => {
                     clearInterval(timer);
                     balance += 5;
                     localStorage.setItem(`ad_${adId}_time`, Date.now());
-                    updateUI();
+                    syncBalance();
                     btn.innerText = "দেখা শেষ";
                 }
                 timeLeft--;
@@ -73,13 +86,19 @@ adLinks.forEach((link, index) => {
     adGrid.appendChild(btn);
 });
 
-function share(platform) {
-    const msg = encodeURIComponent("মিষ্টি AM-এ জয়েন করুন: " + window.location.href);
-    const url = platform === 'whatsapp' ? `https://wa.me/?text=${msg}` : `https://t.me/share/url?url=${msg}`;
-    window.open(url, '_blank');
-    // NO balance added for refer
+// Telegram Logic
+window.joinTelegram = function() {
+    if (!localStorage.getItem('tgJoined')) {
+        window.open("https://t.me/mistiam5", '_blank');
+        balance += 10;
+        localStorage.setItem('tgJoined', 'true');
+        syncBalance();
+    }
 }
 
-updateUI();
-checkTgStatus();
-            
+window.share = function(platform) {
+    const text = encodeURIComponent("মিষ্টি AM-এ জয়েন করুন: " + window.location.href);
+    const url = platform === 'whatsapp' ? `https://wa.me/?text=${text}` : `https://t.me/share/url?url=${text}`;
+    window.open(url, '_blank');
+                        }
+                        

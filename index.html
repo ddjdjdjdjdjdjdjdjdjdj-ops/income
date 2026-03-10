@@ -3,53 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Misti AM Earning</title>
+    <title>মিষ্টি AM - ইনকাম করুন</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="container">
-        <div class="header">
-            <h1>মিষ্টি AM</h1>
-            <div class="balance-card">
-                <p>ব্যালেন্স: <span id="balance">0</span> টাকা</p>
-            </div>
-        </div>
-
-        <div class="ad-grid" id="adGrid">
-            </div>
-
-        <div class="action-card">
-            <h3>টাকা উত্তোলন</h3>
-            <div class="withdraw-form">
-                <select>
-                    <option>বিকাশ (Bkash)</option>
-                    <option>নগদ (Nagad)</option>
-                </select>
-                <input type="number" placeholder="নাম্বার দিন">
-                <input type="number" placeholder="টাকার পরিমাণ">
-                <button class="btn-withdraw" disabled>টাকা তুলুন</button>
-            </div>
-        </div>
-
-        <div class="action-card">
-            <h3>রেফার অপশন</h3>
-            <div class="share-group">
-                <button onclick="share('whatsapp')" class="btn-wa">WhatsApp Refer</button>
-                <button onclick="share('telegram')" class="btn-tg">Telegram Refer</button>
-            </div>
-            <p style="margin-top:10px; font-size:14px;">রেফার করে ১০ টাকা ইনকাম করুন</p>
-            
-            <hr class="divider">
-            
-            <button id="tgJoinBtn" onclick="joinTelegram()" class="btn-join">
-                টেলিগ্রাম চ্যানেলে জয়েন করে ১০ টাকা নিন
-            </button>
-            <p class="channel-link">@mistiam5</p>
+    <div class="header-card">
+        <h1>মিষ্টি AM</h1>
+        <div class="balance-box">
+            ব্যালেন্স: <span id="balance">0</span> টাকা
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <div id="adGrid" class="ad-grid"></div>
+
+    <div class="withdraw-section">
+        <h3>টাকা উত্তোলন</h3>
+        <select id="paymentMethod">
+            <option value="Bkash">বিকাশ (Bkash)</option>
+            <option value="Nagad">নগদ (Nagad)</option>
+        </select>
+        <input type="text" id="withdrawNumber" placeholder="নাম্বার দিন">
+        <input type="number" id="withdrawAmount" placeholder="টাকার পরিমাণ">
+        <button onclick="withdrawMoney()" id="withdrawBtn">টাকা তুলুন</button>
+    </div>
+
+    <div class="refer-section">
+        <h3>রেফার অপশন</h3>
+        <button onclick="share('whatsapp')" style="background:#25D366">WhatsApp Refer</button>
+        <button onclick="share('telegram')" style="background:#0088cc">Telegram Refer</button>
+        <p>রেফার করে ১০ টাকা ইনকাম করুন</p>
+    </div>
+
+    <script type="module" src="script.js"></script>
 </body>
-                </html>
-                
+</html>
+

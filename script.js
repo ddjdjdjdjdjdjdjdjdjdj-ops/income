@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, set, get, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBWhYvIKGHfDO4NrH0G5N692FljzD_wmZc",
@@ -21,7 +21,7 @@ let balance = 0;
 const balanceDisplay = document.getElementById('balance');
 const adGrid = document.getElementById('adGrid');
 
-// আপনার অ্যাড লিঙ্কগুলো
+// আপনার অ্যাড লিঙ্কসমূহ
 const adLinks = [
     "https://omg10.com/4/10692959", "https://omg10.com/4/10708147", "https://omg10.com/4/10708152",
     "https://omg10.com/4/10708143", "https://omg10.com/4/10678359", "https://omg10.com/4/10692954",
@@ -32,23 +32,22 @@ const adLinks = [
     "https://omg10.com/4/10692956", "https://omg10.com/4/10708149"
 ];
 
-// ব্যালেন্স লোড করা
+// ডাটা লোড
 get(ref(db, 'users/' + userId)).then((snapshot) => {
     if (snapshot.exists()) {
         balance = snapshot.val().balance || 0;
-        balanceDisplay.innerText = balance;
     } else {
         set(ref(db, 'users/' + userId), { balance: 0 });
     }
+    if(balanceDisplay) balanceDisplay.innerText = balance;
 });
 
-// ব্যালেন্স আপডেট
 function syncBalance() {
     update(ref(db, 'users/' + userId), { balance: balance });
-    balanceDisplay.innerText = balance;
+    if(balanceDisplay) balanceDisplay.innerText = balance;
 }
 
-// অ্যাড বাটন তৈরি
+// অ্যাড বাটন (৫ মিনিট টাইমার + ২৪ ঘণ্টা লক)
 if (adGrid) {
     adLinks.forEach((link, index) => {
         const adId = index + 1;
@@ -61,22 +60,26 @@ if (adGrid) {
         if (isLocked) {
             btn.disabled = true;
             btn.innerText = "দেখা শেষ";
+            btn.style.background = "#ccc";
         } else {
             btn.innerText = `অ্যাড ${adId}`;
             btn.onclick = () => {
                 window.open(link, '_blank');
-                let timer = 5; // ৫ সেকেন্ডের টাইমার
+                let timeLeft = 300; // ৫ মিনিট
                 btn.disabled = true;
-                const interval = setInterval(() => {
-                    btn.innerText = `অপেক্ষা করুন ${timer}s`;
-                    if (timer <= 0) {
-                        clearInterval(interval);
+                const timer = setInterval(() => {
+                    let mins = Math.floor(timeLeft / 60);
+                    let secs = timeLeft % 60;
+                    btn.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
                         balance += 5;
                         localStorage.setItem(`ad_${adId}_time`, Date.now());
                         syncBalance();
                         btn.innerText = "দেখা শেষ";
+                        btn.style.background = "#ccc";
                     }
-                    timer--;
+                    timeLeft--;
                 }, 1000);
             };
         }
@@ -84,31 +87,26 @@ if (adGrid) {
     });
 }
 
-// উইথড্র ফাংশন
-window.withdrawMoney = function() {
-    const num = document.getElementById('withdrawNumber').value;
-    const amount = parseInt(document.getElementById('withdrawAmount').value);
-    const method = document.getElementById('paymentMethod').value;
+// টেলিগ্রাম বোনাস (একবার ক্লিক করলেই ব্ল্যাঙ্ক হবে)
+if (localStorage.getItem('tgBonusClaimed') === 'true') {
+    const tgSec = document.getElementById('tgJoinSection');
+    if (tgSec) tgSec.style.display = 'none';
+}
 
-    if (amount > balance || amount < 40) {
-        alert("ব্যালেন্স কম বা সর্বনিম্ন ৪০ টাকা লাগবে।");
-        return;
-    }
-
-    balance -= amount;
+window.claimTelegramBonus = function() {
+    window.open("https://t.me/mistiam5", '_blank');
+    balance += 10;
     syncBalance();
-
-    push(ref(db, 'withdrawRequests'), {
-        userId: userId,
-        number: num,
-        amount: amount,
-        method: method,
-        time: new Date().toLocaleString()
-    }).then(() => alert("অনুরোধ পাঠানো হয়েছে!"));
+    localStorage.setItem('tgBonusClaimed', 'true');
+    const tgSec = document.getElementById('tgJoinSection');
+    if (tgSec) tgSec.innerHTML = "";
+    alert("১০ টাকা বোনাস যোগ হয়েছে!");
 };
 
-window.share = (p) => {
-    const url = encodeURIComponent(window.location.href);
-    window.open(p === 'whatsapp' ? `https://wa.me/?text=${url}` : `https://t.me/share/url?url=${url}`);
+// রেফার অপশন (বোট লিঙ্ক শেয়ার হবে)
+window.shareReferral = function() {
+    const botLink = "https://t.me/mistiambot";
+    const text = encodeURIComponent("মিষ্টি AM-এ জয়েন করে ইনকাম শুরু করুন! লিঙ্ক: " + botLink);
+    window.open(`https://t.me/share/url?url=${botLink}&text=${text}`, '_blank');
 };
               

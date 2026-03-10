@@ -1,1 +1,64 @@
 
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Misti AM</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 20px; text-align: center; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background: #ff9800; color: white; }
+        .stat-card { background: #fff3e0; padding: 20px; border-radius: 10px; margin-bottom: 20px; font-size: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Panel 🥭</h1>
+        <div class="stat-card">মোট ইউজার: <span id="userCount">0</span> | মোট ব্যালেন্স: ৳<span id="totalB">0</span></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ইউজার আইডি</th>
+                    <th>ব্যালেন্স (টাকা)</th>
+                </tr>
+            </thead>
+            <tbody id="userList"></tbody>
+        </table>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWhYvIKGHfDO4NrH0G5N692FljzD_wmZc",
+            authDomain: "misti-am.firebaseapp.com",
+            projectId: "misti-am",
+            storageBucket: "misti-am.firebasestorage.app",
+            messagingSenderId: "335857181187",
+            appId: "1:335857181187:web:ce34124f9daea3a4262436",
+            measurementId: "G-2DEXZT0L85"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        onValue(ref(db, 'users'), (snapshot) => {
+            const data = snapshot.val();
+            let rows = "";
+            let count = 0;
+            let total = 0;
+            for (let id in data) {
+                count++;
+                total += data[id].balance;
+                rows += `<tr><td>${id}</td><td>৳${data[id].balance}</td></tr>`;
+            }
+            document.getElementById('userList').innerHTML = rows;
+            document.getElementById('userCount').innerText = count;
+            document.getElementById('totalB').innerText = total;
+        });
+    </script>
+</body>
+</html>

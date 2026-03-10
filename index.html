@@ -2,125 +2,81 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>X World</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>X World Mobile</title>
 <style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#f1f1f1;
-}
-
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px;
-  background:red;
-  color:white;
-}
-
-.search input{
-  padding:6px;
-  width:200px;
-  border:none;
-}
-
-#videos{
-  padding:20px;
-  margin-bottom:80px; /* for bottom menu */
-}
-
-video{
-  width:100%;
-  margin-bottom:10px;
-}
-
-.bottom-menu{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  background:white;
-  display:flex;
-  justify-content:space-around;
-  padding:10px;
-  border-top:1px solid #ccc;
-}
-
-.bottom-menu a{
-  text-decoration:none;
-  font-size:20px;
-  color:black;
-}
-
-.profile-section img{
-  border-radius:50%;
-}
-.comment-section input{
-  width:70%;
-  padding:5px;
-  margin-bottom:10px;
-}
-.comment-section button{
-  padding:5px;
-  background:red;
-  color:white;
-  border:none;
-}
+body{margin:0;font-family:Arial;background:#000;color:#fff;overflow-x:hidden;}
+.header{position:fixed;top:0;width:100%;height:50px;background:red;display:flex;justify-content:space-between;align-items:center;padding:0 10px;z-index:100;}
+.header h2{margin:0;font-size:18px;}
+.header .search input{width:150px;padding:4px;border:none;border-radius:4px;}
+.video-card{position:relative;width:100%;height:80vh;display:flex;flex-direction:column;justify-content:flex-end;margin-bottom:10px;background:#111;}
+video{width:100%;height:100%;object-fit:cover;}
+.video-info{position:absolute;bottom:10px;left:10px;}
+.video-info h3{margin:0;font-size:16px;}
+.actions{position:absolute;bottom:10px;right:10px;display:flex;flex-direction:column;align-items:center;}
+.actions button{margin:5px;background:none;border:none;color:white;font-size:18px;cursor:pointer;}
+.bottom-menu{position:fixed;bottom:0;width:100%;height:50px;background:#111;display:flex;justify-content:space-around;align-items:center;border-top:1px solid #333;}
+.bottom-menu a{text-decoration:none;color:white;font-size:22px;}
+#uploadSection,#profileSection{display:none;padding:20px;color:#000;background:#fff;height:100vh;overflow:auto;}
+#uploadSection h2,#profileSection h2{color:#000;}
+#uploadSection input,#profileSection input{width:90%;padding:8px;margin:10px 0;}
+#uploadSection button,#profileSection button{padding:10px;background:red;color:#fff;border:none;border-radius:4px;}
+.profile-section img{border-radius:50%;width:100px;}
+.comment-section input{width:70%;padding:5px;margin-top:5px;}
+.comment-section button{padding:5px;background:red;color:#fff;border:none;margin-top:5px;}
 </style>
-
 </head>
 <body>
 
 <header class="header">
-  <h2>X World</h2>
-  <div class="search">
-    <input id="search" placeholder="Search video or username">
-    <button onclick="searchVideos()">🔍</button>
-  </div>
-  <div id="user"></div>
+<h2>X World</h2>
+<div class="search">
+<input id="search" placeholder="Search">
+<button onclick="searchVideos()">🔍</button>
+</div>
+<div id="user"></div>
 </header>
 
-<div id="videos"></div>
+<div id="videos" style="margin-top:50px;"></div>
 
 <div class="bottom-menu">
-  <a href="#" onclick="showHome()">🏠 Home</a>
-  <a href="#" onclick="showUpload()">➕</a>
-  <a href="#" onclick="showProfile()">👤 Profile</a>
+<a href="#" onclick="showHome()">🏠</a>
+<a href="#" onclick="showUpload()">➕</a>
+<a href="#" onclick="showProfile()">👤</a>
 </div>
 
-<!-- Upload Section -->
-<div id="uploadSection" style="display:none;text-align:center;padding:20px;">
-  <h2>Upload Video</h2>
-  <input id="title" placeholder="Video Title"><br><br>
-  <input type="file" id="videoFile"><br><br>
-  <button onclick="uploadVideo()">Upload</button>
+<!-- Upload -->
+<div id="uploadSection">
+<h2>Upload Video</h2>
+<input id="title" placeholder="Video Title"><br>
+<input type="file" id="videoFile"><br><br>
+<button onclick="uploadVideo()">Upload</button>
 </div>
 
-<!-- Profile Section -->
-<div id="profileSection" style="display:none;text-align:center;padding:20px;">
-  <h2>Your Profile</h2>
-  <div class="profile-section">
-    <img id="profilePhoto" width="100"><br>
-    <h3 id="profileName"></h3>
-    <p id="subscribers"></p>
-  </div>
+<!-- Profile -->
+<div id="profileSection">
+<h2>Your Profile</h2>
+<div class="profile-section">
+<img id="profilePhoto">
+<h3 id="profileName"></h3>
+<p id="subscribers"></p>
+</div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, updateDoc, increment, doc, query, where } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js";
 
 // Firebase Config
 const firebaseConfig = {
-  apiKey: "AIzaSyBWhYvIKGHfDO4NrH0G5N692FljzD_wmZc",
-  authDomain: "misti-am.firebaseapp.com",
-  projectId: "misti-am",
-  storageBucket: "misti-am.firebasestorage.app",
-  messagingSenderId: "335857181187",
-  appId: "1:335857181187:web:ce34124f9daea3a4262436"
+apiKey: "AIzaSyBWhYvIKGHfDO4NrH0G5N692FljzD_wmZc",
+authDomain: "misti-am.firebaseapp.com",
+projectId: "misti-am",
+storageBucket: "misti-am.firebasestorage.app",
+messagingSenderId: "335857181187",
+appId: "1:335857181187:web:ce34124f9daea3a4262436"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -130,126 +86,97 @@ const storage = getStorage(app);
 
 let currentUser = null;
 
-// Gmail Login
+// Login
 const provider = new GoogleAuthProvider();
 signInWithPopup(auth, provider).then(result=>{
-  currentUser = result.user;
-  document.getElementById("user").innerHTML = `<img src="${currentUser.photoURL}" width="35" style="border-radius:50%">`;
-  loadVideos();
-}).catch(err=>{
-  console.log(err);
-});
+currentUser = result.user;
+document.getElementById("user").innerHTML=`<img src="${currentUser.photoURL}" width="35" style="border-radius:50%">`;
+showHome();
+loadVideos();
+}).catch(console.log);
 
-// Show / Hide Sections
-function showHome(){ document.getElementById("videos").style.display="block"; document.getElementById("uploadSection").style.display="none"; document.getElementById("profileSection").style.display="none"; }
-function showUpload(){ document.getElementById("videos").style.display="none"; document.getElementById("uploadSection").style.display="block"; document.getElementById("profileSection").style.display="none"; }
-function showProfile(){ document.getElementById("videos").style.display="none"; document.getElementById("uploadSection").style.display="none"; document.getElementById("profileSection").style.display="block"; loadProfile(); }
+// Section toggles
+function showHome(){document.getElementById("videos").style.display="block";document.getElementById("uploadSection").style.display="none";document.getElementById("profileSection").style.display="none";loadVideos();}
+function showUpload(){document.getElementById("videos").style.display="none";document.getElementById("uploadSection").style.display="block";document.getElementById("profileSection").style.display="none";}
+function showProfile(){document.getElementById("videos").style.display="none";document.getElementById("uploadSection").style.display="none";document.getElementById("profileSection").style.display="block";loadProfile();}
 
 // Load Videos
 async function loadVideos(){
-  const querySnapshot = await getDocs(collection(db,"videos"));
-  let html="";
-  querySnapshot.forEach(doc=>{
-    const data = doc.data();
-    html+=`
-      <div style="margin-bottom:20px;">
-        <h3>${data.title}</h3>
-        <video controls onplay="addView('${doc.id}')">
-          <source src="${data.url}">
-        </video><br>
-        <button onclick="likeVideo('${doc.id}')">❤️ Like (${data.likes||0})</button>
-        <div class="comment-section">
-          <input id="commentInput-${doc.id}" placeholder="Write a comment">
-          <button onclick="postComment('${doc.id}')">Comment</button>
-        </div>
-      </div>
-    `;
-  });
-  document.getElementById("videos").innerHTML = html;
+const querySnapshot = await getDocs(collection(db,"videos"));
+let html="";
+querySnapshot.forEach(doc=>{
+const data = doc.data();
+html+=`<div class="video-card">
+<video src="${data.url}" onplay="addView('${doc.id}')" autoplay muted loop></video>
+<div class="video-info">
+<h3>${data.title}</h3>
+</div>
+<div class="actions">
+<button onclick="likeVideo('${doc.id}')">❤️ ${data.likes||0}</button>
+<div class="comment-section">
+<input id="commentInput-${doc.id}" placeholder="Comment">
+<button onclick="postComment('${doc.id}')">💬</button>
+</div>
+</div>
+</div>`;
+});
+document.getElementById("videos").innerHTML = html;
 }
 
-// Upload Video
+// Upload
 window.uploadVideo = async function(){
-  const file = document.getElementById("videoFile").files[0];
-  const title = document.getElementById("title").value;
-  if(!file || !title) return alert("Select file and title");
-  const storageRef = ref(storage,"videos/"+file.name);
-  await uploadBytes(storageRef,file);
-  const url = await getDownloadURL(storageRef);
-  await addDoc(collection(db,"videos"),{
-    title:title,
-    url:url,
-    uploaderName: currentUser.displayName,
-    likes:0,
-    views:0,
-    date:Date.now()
-  });
-  alert("Video Uploaded!");
-  showHome();
-  loadVideos();
+const file = document.getElementById("videoFile").files[0];
+const title = document.getElementById("title").value.trim();
+if(!file||!title)return alert("Select file and title");
+const storageRef=ref(storage,"videos/"+file.name);
+await uploadBytes(storageRef,file);
+const url=await getDownloadURL(storageRef);
+await addDoc(collection(db,"videos"),{title,url,uploaderName:currentUser.displayName,likes:0,views:0,date:Date.now()});
+alert("Uploaded!");
+document.getElementById("title").value="";document.getElementById("videoFile").value="";showHome();
 }
 
-// Like Video
-window.likeVideo = async function(id){
-  const videoRef = doc(db,"videos",id);
-  await updateDoc(videoRef,{ likes: increment(1) });
-  loadVideos();
-}
+// Likes
+window.likeVideo = async function(id){await updateDoc(doc(db,"videos",id),{likes: increment(1)});loadVideos();}
 
-// Add View
-window.addView = async function(id){
-  const videoRef = doc(db,"videos",id);
-  await updateDoc(videoRef,{ views: increment(1) });
-}
+// Views
+window.addView = async function(id){await updateDoc(doc(db,"videos",id),{views: increment(1)});}
 
-// Post Comment
+// Comment
 window.postComment = async function(id){
-  const input = document.getElementById("commentInput-"+id);
-  const text = input.value;
-  if(!text) return alert("Write a comment");
-  await addDoc(collection(db,"comments"),{
-    videoId:id,
-    user:currentUser.displayName,
-    text:text,
-    date:Date.now()
-  });
-  input.value="";
-  alert("Comment Posted!");
+const text=document.getElementById("commentInput-"+id).value.trim();
+if(!text)return alert("Write comment");
+await addDoc(collection(db,"comments"),{videoId:id,user:currentUser.displayName,text,date:Date.now()});
+document.getElementById("commentInput-"+id).value="";alert("Comment posted");
 }
 
-// Load Profile
+// Profile
 async function loadProfile(){
-  document.getElementById("profilePhoto").src = currentUser.photoURL;
-  document.getElementById("profileName").innerText = currentUser.displayName;
-  
-  // Count subscribers example (can expand later)
-  const q = query(collection(db,"subscriptions"), where("channel","==",currentUser.uid));
-  const snapshot = await getDocs(q);
-  document.getElementById("subscribers").innerText = `Subscribers: ${snapshot.size}`;
+if(!currentUser)return alert("Login first");
+document.getElementById("profilePhoto").src=currentUser.photoURL;
+document.getElementById("profileName").innerText=currentUser.displayName;
+const q=query(collection(db,"subscriptions"),where("channel","==",currentUser.uid));
+const snapshot=await getDocs(q);
+document.getElementById("subscribers").innerText=`Subscribers: ${snapshot.size}`;
 }
 
-// Search Videos / Username
+// Search
 window.searchVideos = async function(){
-  const queryText = document.getElementById("search").value.toLowerCase();
-  const querySnapshot = await getDocs(collection(db,"videos"));
-  let html="";
-  querySnapshot.forEach(doc=>{
-    const data = doc.data();
-    if(data.title.toLowerCase().includes(queryText) || data.uploaderName.toLowerCase().includes(queryText)){
-      html+=`
-      <div style="margin-bottom:20px;">
-        <h3>${data.title}</h3>
-        <video controls onplay="addView('${doc.id}')">
-          <source src="${data.url}">
-        </video>
-        <button onclick="likeVideo('${doc.id}')">❤️ Like (${data.likes||0})</button>
-      </div>
-      `;
-    }
-  });
-  document.getElementById("videos").innerHTML = html;
+const queryText=document.getElementById("search").value.toLowerCase();
+const querySnapshot=await getDocs(collection(db,"videos"));
+let html="";
+querySnapshot.forEach(doc=>{
+const data=doc.data();
+if(data.title.toLowerCase().includes(queryText)||data.uploaderName.toLowerCase().includes(queryText)){
+html+=`<div class="video-card">
+<video src="${data.url}" onplay="addView('${doc.id}')" autoplay muted loop></video>
+<div class="video-info"><h3>${data.title}</h3></div>
+<div class="actions"><button onclick="likeVideo('${doc.id}')">❤️ ${data.likes||0}</button></div>
+</div>`;
+}
+});
+document.getElementById("videos").innerHTML=html;
 }
 </script>
-
 </body>
-  </html>
+</html>

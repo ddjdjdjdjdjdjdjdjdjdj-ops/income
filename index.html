@@ -10,9 +10,9 @@
 
     <div class="container">
         <div class="header">
-            <h1>Misti AM</h1>
+            <h1>মিষ্টি AM</h1>
             <div class="balance-card">
-                <p>Balance: <span id="balance">0</span> Taka</p>
+                <p>ব্যালেন্স: <span id="balance">0</span> টাকা</p>
             </div>
         </div>
 
@@ -20,16 +20,30 @@
             </div>
 
         <div class="action-card">
-            <h3>Refer kore 10 taka income korun</h3>
+            <h3>টাকা উত্তোলন</h3>
+            <div class="withdraw-form">
+                <select>
+                    <option>বিকাশ (Bkash)</option>
+                    <option>নগদ (Nagad)</option>
+                </select>
+                <input type="number" placeholder="নাম্বার দিন">
+                <input type="number" placeholder="টাকার পরিমাণ">
+                <button class="btn-withdraw" disabled>টাকা তুলুন</button>
+            </div>
+        </div>
+
+        <div class="action-card">
+            <h3>রেফার অপশন</h3>
             <div class="share-group">
                 <button onclick="share('whatsapp')" class="btn-wa">WhatsApp Refer</button>
                 <button onclick="share('telegram')" class="btn-tg">Telegram Refer</button>
             </div>
+            <p style="margin-top:10px; font-size:14px;">রেফার করে ১০ টাকা ইনকাম করুন</p>
             
             <hr class="divider">
             
-            <button onclick="joinTelegram()" class="btn-join">
-                Telegram Channel-e Join kore 10 Taka Nin
+            <button id="tgJoinBtn" onclick="joinTelegram()" class="btn-join">
+                টেলিগ্রাম চ্যানেলে জয়েন করে ১০ টাকা নিন
             </button>
             <p class="channel-link">@mistiam5</p>
         </div>
@@ -37,5 +51,5 @@
 
     <script src="script.js"></script>
 </body>
-</html>
-
+                </html>
+                

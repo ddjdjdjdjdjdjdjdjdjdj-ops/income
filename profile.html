@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Profile</title>
+
+<style>
+
+body{
+font-family:Arial;
+text-align:center;
+}
+
+img{
+border-radius:50%;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Your Profile</h2>
+
+<img id="photo" width="100">
+
+<h3 id="name"></h3>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyBWhYvIKGHfDO4NrH0G5N692FljzD_wmZc",
+authDomain: "misti-am.firebaseapp.com",
+projectId: "misti-am",
+storageBucket: "misti-am.firebasestorage.app",
+messagingSenderId: "335857181187",
+appId: "1:335857181187:web:ce34124f9daea3a4262436"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth=getAuth(app)
+
+onAuthStateChanged(auth,(user)=>{
+
+if(user){
+
+document.getElementById("photo").src=user.photoURL
+document.getElementById("name").innerText=user.displayName
+
+}
+
+})
+
+</script>
+
+</body>
+
+  </html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>টেলিগ্রাম জয়েন বোনাস</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .bonus-card { background: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 90%; max-width: 400px; }
+        .tg-btn { background: #0088cc; color: white; border: none; padding: 15px 25px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; }
+        .tg-btn:hover { background: #0077b5; }
+        h3 { color: #333; margin-bottom: 20px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="bonusSection" class="bonus-card">
+        <h3>টেলিগ্রাম চ্যানেলে জয়েন করে ১০ টাকা বোনাস নিন! 🎁</h3>
+        <button id="joinBtn" class="tg-btn" onclick="claimBonus()">টেলিগ্রাম জয়েন করুন</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWhYvIKGHfDO4NrH0G5N692FljzD_wmZc",
+            authDomain: "misti-am.firebaseapp.com",
+            projectId: "misti-am",
+            storageBucket: "misti-am.firebasestorage.app",
+            messagingSenderId: "335857181187",
+            appId: "1:335857181187:web:ce34124f9daea3a4262436"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const userId = localStorage.getItem('mistiUserId');
+
+        // যদি ইউজার আগে একবার ক্লিক করে থাকে তবে কার্ড হাইড করে দিবে
+        if (localStorage.getItem('tg_bonus_claimed') === 'true') {
+            document.getElementById('bonusSection').classList.add('hidden');
+        }
+
+        window.claimBonus = function() {
+            if (!userId) {
+                alert("ইউজার আইডি পাওয়া যায়নি! আগে মেইন পেজে যান।");
+                return;
+            }
+
+            // টেলিগ্রাম লিঙ্ক ওপেন হবে
+            window.open("https://t.me/+3HhpaupExmtkYWI1", '_blank');
+
+            // ফায়ারবেস থেকে ব্যালেন্স আপডেট
+            const userRef = ref(db, 'users/' + userId);
+            get(userRef).then((snapshot) => {
+                let currentBalance = 0;
+                if (snapshot.exists()) {
+                    currentBalance = snapshot.val().balance || 0;
+                }
+                
+                // ১০ টাকা যোগ করা
+                update(userRef, { balance: currentBalance + 10 });
+
+                // লোকাল স্টোরেজে সেভ করা যাতে আর না আসে
+                localStorage.setItem('tg_bonus_claimed', 'true');
+
+                // স্ক্রিন থেকে বাটন গায়েব করা
+                document.getElementById('bonusSection').innerHTML = "<h3>বোনাস সফলভাবে যোগ হয়েছে! ✅</h3>";
+                setTimeout(() => {
+                    document.getElementById('bonusSection').classList.add('hidden');
+                }, 2000);
+            });
+        };
+    </script>
+</body>
+  </html>
+  

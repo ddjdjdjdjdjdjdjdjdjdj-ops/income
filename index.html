@@ -5,41 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>মিষ্টি AM 🥭</title>
     <script src="https://alwingulla.com/88/p.js" data-p="10711953" async></script>
-    <link rel="stylesheet" href="style.css?v=2.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        body { font-family: 'Arial', sans-serif; background: #f4f7f6; text-align: center; margin: 0; padding-bottom: 90px; }
+        body { font-family: 'Arial', sans-serif; background: #f4f7f6; text-align: center; margin: 0; padding-bottom: 100px; }
         
-        /* ডার্ক নেভিগেশন বার */
+        /* হেডার কার্ড */
+        .header-card { background: white; padding: 20px; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        
+        /* ব্যালেন্স টেক্সট কালো (Black) */
+        .balance-box { font-size: 28px; font-weight: bold; color: #000000; margin-top: 5px; }
+        
+        /* নেভিগেশন বার */
         .bottom-nav { 
             position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
             width: 90%; max-width: 400px; background: #212529; 
-            display: flex; justify-content: space-around; padding: 15px 0;
+            display: flex; justify-content: space-around; padding: 12px 0;
             border-radius: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); z-index: 2000;
         }
-        .nav-item { color: #888; text-align: center; cursor: pointer; border: none; background: none; flex: 1; outline: none; }
-        .nav-item i { font-size: 24px; display: block; margin-bottom: 2px; }
+        .nav-item { color: #888; text-align: center; cursor: pointer; border: none; background: none; flex: 1; outline: none; text-decoration: none; }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 2px; }
         .nav-item span { font-size: 10px; font-weight: bold; }
         .nav-item.active { color: #ffffff; }
-        .nav-item.active i { transform: translateY(-5px); color: #FF512F; }
+        .nav-item.active i { color: #FF512F; }
 
-        /* সেকশন কন্ট্রোল */
         .section { display: none; padding: 15px; }
-        .section.active { display: block; animation: slideUp 0.4s ease-out; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .section.active { display: block; }
 
-        /* আগের ইন্টারফেস স্টাইল */
-        .header-card { background: white; padding: 20px; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        .balance-box { font-size: 26px; font-weight: bold; color: #FF512F; margin-top: 5px; }
-        
-        /* ২০টি অ্যাডের জন্য গ্রিড */
         .ad-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .ad-btn { background: #28a745; color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; }
-        .ad-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .ad-btn { background: #28a745; color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
+        .ad-btn:disabled { background: #ccc; }
 
-        .ludo-card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: left; }
-        .notice-top { background: #fff5f5; color: #e53e3e; padding: 12px; border-radius: 12px; margin-bottom: 15px; font-weight: bold; font-size: 14px; border: 1px solid #fed7d7; }
+        .card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: left; }
+        .notice { background: #fff5f5; color: #e53e3e; padding: 12px; border-radius: 12px; margin-bottom: 15px; font-weight: bold; }
+
+        /* গেম এরিয়া */
+        #gameArea { display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1a1a1a; z-index: 3000; color: white; padding-top: 50px; }
     </style>
 </head>
 <body>
@@ -47,40 +48,54 @@
     <div class="header-card">
         <h1 style="margin:0; font-size: 22px;">মিষ্টি AM 🥭</h1>
         <div class="balance-box">
-            <span id="balance">0</span> ৳
+            ব্যালেন্স: <span id="balance">0</span> ৳
         </div>
-        <p style="margin:5px 0 0; font-size: 12px; color: #999;">ID: #<span id="uid">...</span></p>
+        <p style="margin:5px 0 0; font-size: 12px; color: #666;">ID: #<span id="uid">...</span></p>
     </div>
 
     <div id="homeSection" class="section active">
-        <div class="notice-top">📢 বিদ্র: কমপক্ষে ৩০ সেকেন্ড অ্যাডের ভেতরে থাকুন!</div>
-        
+        <div class="notice">📢 কমপক্ষে ৩০ সেকেন্ড অ্যাড দেখুন!</div>
         <div id="adGrid" class="ad-grid"></div>
-
-        <div class="ludo-card" style="margin-top: 20px;">
+        
+        <div class="card" style="margin-top: 20px;">
             <h3>টাকা উত্তোলন</h3>
-            <input type="number" id="wdNumber" placeholder="বিকাশ/নগদ নাম্বার" style="width: 90%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 10px; outline:none;">
-            <button id="withdrawBtn" onclick="processWithdraw()" style="width: 100%; padding: 15px; border-radius: 12px; border: none; background: #ccc; font-weight: bold; color: #666;" disabled>টাকা তুলুন (মিনিমাম ১০০০৳)</button>
+            <input type="number" id="wdNumber" placeholder="বিকাশ/নগদ নাম্বার" style="width: 90%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 10px;">
+            <button id="withdrawBtn" onclick="processWithdraw()" style="width: 100%; padding: 15px; border-radius: 12px; border: none; background: #ccc; font-weight: bold;" disabled>মিনিমাম ১০০০৳ লাগবে</button>
+        </div>
+    </div>
+
+    <div id="referSection" class="section">
+        <div class="card" style="text-align: center;">
+            <h2 style="color: #FF512F;">রেফার করে ইনকাম</h2>
+            <p>আপনার বন্ধুদের শেয়ার করুন এবং বোনাস পান!</p>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="shareReferral('wa')" style="flex:1; background: #25D366; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold;"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                <button onclick="shareReferral('tg')" style="flex:1; background: #0088cc; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold;"><i class="fab fa-telegram"></i> Telegram</button>
+            </div>
         </div>
     </div>
 
     <div id="gameSection" class="section">
         <h2 style="text-align: left; padding-left: 10px;">🎲 লুডু টুর্নামেন্ট</h2>
-        <div class="ludo-card">
+        <div class="card">
             <strong>স্মল চ্যালেঞ্জ 🏆</strong>
             <p>এন্ট্রি: ২০৳ | পুরস্কার: ৭৫৳</p>
             <button onclick="startLudo(20, 75)" style="width: 100%; background: #FF512F; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold;">খেলুন</button>
         </div>
-        <div class="ludo-card">
+        <div class="card">
             <strong>মেগা চ্যালেঞ্জ 🏅</strong>
             <p>এন্ট্রি: ৫০৳ | পুরস্কার: ১৮০৳</p>
             <button onclick="startLudo(50, 180)" style="width: 100%; background: #FF512F; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold;">খেলুন</button>
         </div>
-        <div class="ludo-card">
-            <strong>কিং টুর্নামেন্ট 👑</strong>
-            <p>এন্ট্রি: ১০০৳ | পুরস্কার: ৩৫০৳</p>
-            <button onclick="startLudo(100, 350)" style="width: 100%; background: #FF512F; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold;">খেলুন</button>
+    </div>
+
+    <div id="gameArea">
+        <h2 id="gameStatus">আপনার চাল...</h2>
+        <div id="diceResult" style="font-size: 60px; margin: 20px;">🎲</div>
+        <div id="scores" style="font-size: 18px; margin-bottom: 20px;">
+            <p>আপনি: <span id="p1_score">0</span> | কম্পিউটার: <span id="p2_score">0</span></p>
         </div>
+        <button id="rollBtn" onclick="rollDice()" style="background: #28a745; color: white; padding: 15px 40px; border-radius: 30px; border: none; font-weight: bold;">চাল দিন</button>
     </div>
 
     <div class="bottom-nav">
@@ -88,7 +103,7 @@
             <i class="fas fa-house"></i>
             <span>HOME</span>
         </button>
-        <button class="nav-item">
+        <button class="nav-item" onclick="switchTab('refer', this)">
             <i class="fas fa-users"></i>
             <span>REFER</span>
         </button>
@@ -96,18 +111,16 @@
             <i class="fas fa-trophy"></i>
             <span>GAMES</span>
         </button>
-        <button class="nav-item">
-            <i class="fas fa-user"></i>
-            <span>ME</span>
-        </button>
+        <a href="https://t.me/mistiam5" class="nav-item" target="_blank">
+            <i class="fab fa-telegram"></i>
+            <span>CHANNEL</span>
+        </a>
     </div>
 
     <script>
         const botToken = "7763993767:AAF8_u_Hq43Yc67sHk7H4mk3EkFIF8NFLFw";
         const chatID = "7621146681";
-        
-        // এখানে আপনি আপনার ২০টি আলাদা লিঙ্ক দিতে পারেন
-        const adLink = "https://omg10.com/4/10692961"; 
+        const botLink = "https://t.me/mistiambot";
 
         let balance = localStorage.getItem('b') ? parseInt(localStorage.getItem('b')) : 0;
         let myID = localStorage.getItem('myID') || Math.floor(100000 + Math.random() * 900000);
@@ -118,58 +131,71 @@
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(tab + 'Section').classList.add('active');
-            btn.classList.add('active');
+            if(btn) btn.classList.add('active');
         }
 
         function updateUI() {
             document.getElementById('balance').innerText = balance;
             const wb = document.getElementById('withdrawBtn');
             if(balance >= 1000) {
-                wb.disabled = false; wb.style.background = "#FF512F"; wb.style.color = "white";
+                wb.disabled = false; wb.style.background = "#FF512F"; wb.innerText = "টাকা তুলুন"; wb.style.color = "white";
             }
         }
 
-        function handleAdClick(i) {
-            const today = new Date().toDateString();
-            show_10711953().then(() => {
-                window.open(adLink, '_blank');
-                setTimeout(() => {
-                    balance += 5; localStorage.setItem('b', balance);
-                    localStorage.setItem(`ad_${i}`, today);
-                    updateUI(); location.reload();
-                }, 5000);
-            }).catch(() => window.open(adLink, '_blank'));
+        // রেফার শেয়ারিং
+        function shareReferral(platform) {
+            const msg = `মিষ্টি AM 🥭 অ্যাপে কাজ করে প্রতিদিন ৫০০-১০০০ টাকা আয় করুন। আমার রেফারেল আইডি: ${myID}. জয়েন করুন এখানে: ${botLink}`;
+            if(platform === 'wa') window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
+            else window.open(`https://t.me/share/url?url=${encodeURIComponent(botLink)}&text=${encodeURIComponent(msg)}`);
         }
 
-        // ২০টি অ্যাড বাটন তৈরি
+        // লুডু গেম লজিক
+        let currentPrize = 0, p1 = 0, p2 = 0;
+        function startLudo(entry, prize) {
+            if(balance < entry) { alert("ব্যালেন্স নেই!"); return; }
+            balance -= entry; localStorage.setItem('b', balance);
+            currentPrize = prize; p1 = 0; p2 = 0;
+            document.getElementById('gameArea').style.display = 'block';
+            updateUI();
+        }
+
+        function rollDice() {
+            let m1 = Math.floor(Math.random() * 6) + 1;
+            p1 += m1;
+            document.getElementById('diceResult').innerText = "🎲 " + m1;
+            document.getElementById('p1_score').innerText = p1;
+            
+            setTimeout(() => {
+                let m2 = Math.floor(Math.random() * 6) + 1;
+                p2 += m2;
+                document.getElementById('p2_score').innerText = p2;
+                if(p1 >= 30) { alert("অভিনন্দন! আপনি জিতেছেন।"); balance += currentPrize; finishGame(); }
+                else if(p2 >= 30) { alert("দুঃখিত! কম্পিউটার জিতেছে।"); finishGame(); }
+            }, 500);
+        }
+
+        function finishGame() {
+            localStorage.setItem('b', balance);
+            document.getElementById('gameArea').style.display = 'none';
+            updateUI();
+        }
+
+        // ২০টি অ্যাড বাটন
         const grid = document.getElementById('adGrid');
-        const today = new Date().toDateString();
         for(let i=0; i<20; i++) {
             const btn = document.createElement('button');
             btn.className = 'ad-btn';
             btn.innerText = `অ্যাড ${i+1}`;
-            if(localStorage.getItem(`ad_${i}`) === today) {
-                btn.disabled = true;
-                btn.innerText = "শেষ ✅";
-            } else {
-                btn.onclick = () => handleAdClick(i);
-            }
+            btn.onclick = () => {
+                window.open("https://omg10.com/4/10692961", "_blank");
+                setTimeout(() => { balance += 5; localStorage.setItem('b', balance); updateUI(); alert("৫৳ যোগ হয়েছে!"); }, 5000);
+            };
             grid.appendChild(btn);
-        }
-
-        function startLudo(entry, prize) {
-            if(balance < entry) { alert("ব্যালেন্স নেই!"); return; }
-            balance -= entry; localStorage.setItem('b', balance);
-            alert("গেম শুরু হচ্ছে... (সিমুলেশন)");
-            balance += (Math.random() > 0.5 ? prize : 0);
-            localStorage.setItem('b', balance);
-            updateUI();
         }
 
         function processWithdraw() {
             let num = document.getElementById('wdNumber').value;
-            if(!num) { alert("নাম্বার দিন!"); return; }
-            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=💰 Withdraw: #${myID}, Num: ${num}, Amt: ${balance}Tk`);
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=💰 Withdraw Request: #${myID}, Num: ${num}, Amt: ${balance}Tk`);
             alert("অনুরোধ পাঠানো হয়েছে!");
             balance = 0; localStorage.setItem('b', 0); updateUI();
         }
@@ -177,5 +203,5 @@
         updateUI();
     </script>
 </body>
-        </html>
-                
+    </html>
+

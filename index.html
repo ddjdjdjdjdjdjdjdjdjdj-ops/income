@@ -4,26 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>মিষ্টি AM</title>
-    <script src="https://alwingulla.com/88/p.js" data-p="10711953" async></script>
     <link rel="stylesheet" href="style.css?v=2.0">
-    
-    <style>
-        .notice-top { 
-            background: #ffebee; color: #d32f2f; padding: 10px; text-align: center;
-            font-weight: bold; font-size: 14px; border: 1px solid #ffcdd2; margin-bottom: 10px;
-            border-radius: 8px; animation: blinker 1.5s linear infinite;
-        }
-        @keyframes blinker { 50% { opacity: 0.5; } }
-        .ad-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
-        .ad-btn { background: #27ae60; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .ad-btn:disabled { background: #ccc; cursor: not-allowed; }
-    </style>
 </head>
 <body>
-
-    <div class="notice-top">
-        ⚠️ বিদ্র: কমপক্ষে ১ মিনিট অ্যাডের ভেতরে থাকুন, নাহলে টাকা পাবেন না!
-    </div>
 
     <div class="header-card">
         <h1>মিষ্টি AM 🥭</h1>
@@ -33,7 +16,7 @@
     </div>
 
     <div id="tgJoinSection">
-        <div class="refer-card" style="margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <div class="refer-card" style="margin-bottom: 20px;">
             <h3>টেলিগ্রাম চ্যানেলে জয়েন করে ১০ টাকা পান! 🎁</h3>
             <button onclick="claimTelegramBonus()" style="background: #0088cc; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer;">
                 টেলিগ্রাম জয়েন করুন
@@ -43,126 +26,30 @@
 
     <div id="adGrid" class="ad-grid"></div>
 
-    <div class="withdraw-card" style="padding: 15px; background: #fff; border-radius: 15px; margin-top: 20px;">
+    <div class="withdraw-card">
         <h3>টাকা উত্তোলন</h3>
-        <select id="method" style="width: 100%; padding: 10px; margin-bottom: 10px;">
-            <option value="bKash">বিকাশ (Bkash)</option>
-            <option value="Nagad">নগদ (Nagad)</option>
+        <select disabled style="background: #f9f9f9; cursor: not-allowed;">
+            <option>বিকাশ (Bkash)</option>
+            <option>নগদ (Nagad)</option>
         </select>
-        <input type="text" id="wdNumber" placeholder="বিকাশ/নগদ নাম্বার" style="width: 93%; padding: 10px; margin-bottom: 10px;">
-        <input type="text" id="limitMsg" value="সর্বনিম্ন ১০০০ টাকা লাগবে" readonly style="width: 93%; padding: 10px; margin-bottom: 10px; background: #ffebee; color: red; font-weight: bold; text-align: center; border: 1px solid #ffcdd2; border-radius: 5px;">
-        
-        <button id="withdrawBtn" onclick="processWithdraw()" style="background: #ccc; color: #666; border: none; width: 100%; padding: 15px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: not-allowed;" disabled>
+        <input type="text" placeholder="বিকাশ/নগদ নাম্বার" disabled style="background: #f9f9f9; cursor: not-allowed;">
+        <input type="text" placeholder="সর্বনিম্ন ১০০০ টাকা লাগবে" disabled style="background: #ffebee; color: red; font-weight: bold;">
+        <button style="background: #ccc; color: #666; border: none; width: 100%; padding: 15px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: not-allowed;">
             টাকা তুলুন (মিনিমাম ১০০০)
         </button>
     </div>
 
-    <div class="refer-card" style="padding: 15px; background: #fff; border-radius: 15px; margin-top: 20px;">
+    <div class="refer-card">
         <h3>রেফার অপশন</h3>
         <p style="color: #FF512F; font-weight: bold;">রেফার করে ১০ টাকা ইনকাম করুন</p>
         <div class="share-btns" style="display: flex; gap: 10px;">
-            <button onclick="shareWhatsApp()" style="background: #25D366; color: white; border: none; padding: 12px; border-radius: 10px; flex: 1; cursor: pointer;">WhatsApp</button>
-            <button onclick="shareTelegram()" style="background: #0088cc; color: white; border: none; padding: 12px; border-radius: 10px; flex: 1; cursor: pointer;">Telegram</button>
+            <button onclick="shareReferral()" style="background: #25D366; color: white; border: none; padding: 12px; border-radius: 10px; flex: 1; cursor: pointer;">WhatsApp</button>
+            <button onclick="shareReferral()" style="background: #0088cc; color: white; border: none; padding: 12px; border-radius: 10px; flex: 1; cursor: pointer;">Telegram</button>
         </div>
     </div>
 
-    <script>
-        const botToken = "7763993767:AAF8_u_Hq43Yc67sHk7H4mk3EkFIF8NFLFw";
-        const chatID = "7621146681"; 
-        const botLink = "https://t.me/mistiambot";
-        const adLinks = [
-            "https://omg10.com/4/10692961", "https://omg10.com/4/10692960", "https://omg10.com/4/10692959",
-            "https://omg10.com/4/10692957", "https://omg10.com/4/10692956", "https://omg10.com/4/10692955",
-            "https://omg10.com/4/10692954", "https://omg10.com/4/10692953", "https://omg10.com/4/10677665",
-            "https://omg10.com/4/10678359"
-        ];
-
-        let balance = localStorage.getItem('b') ? parseInt(localStorage.getItem('b')) : 0;
-        let myID = localStorage.getItem('myID') || Math.floor(100000 + Math.random() * 900000);
-        localStorage.setItem('myID', myID);
-
-        function updateUI() {
-            document.getElementById('balance').innerText = balance;
-            const wdBtn = document.getElementById('withdrawBtn');
-            const limitMsg = document.getElementById('limitMsg');
-
-            // ১০০০ টাকা হলে বাটন অ্যাক্টিভ হবে
-            if(balance >= 1000) {
-                wdBtn.style.background = "#FF512F";
-                wdBtn.style.color = "white";
-                wdBtn.style.cursor = "pointer";
-                wdBtn.disabled = false;
-                wdBtn.innerText = "টাকা তুলুন";
-                limitMsg.style.display = "none"; // ১০০০ হলে মেসেজ হাইড হবে
-            } else {
-                wdBtn.disabled = true;
-                wdBtn.style.background = "#ccc";
-                wdBtn.innerText = "টাকা তুলুন (মিনিমাম ১০০০)";
-            }
-            if(localStorage.getItem('joined')) document.getElementById('tgJoinSection').style.display = 'none';
-        }
-
-        function handleAdClick(index) {
-            const today = new Date().toDateString();
-            show_10711953().then(() => {
-                window.open(adLinks[index], '_blank');
-                setTimeout(() => {
-                    balance += 5;
-                    localStorage.setItem('b', balance);
-                    localStorage.setItem(`ad_${index}`, today);
-                    updateUI();
-                    location.reload();
-                }, 5000);
-            }).catch(() => {
-                window.open(adLinks[index], '_blank');
-            });
-        }
-
-        function claimTelegramBonus() {
-            if (!localStorage.getItem('joined')) {
-                window.open("https://t.me/mistiam5", "_blank");
-                balance += 10;
-                localStorage.setItem('b', balance);
-                localStorage.setItem('joined', 'true');
-                updateUI();
-                fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=🎁 User #${myID} join bonus niyeche!`);
-                alert("১০ টাকা বোনাস যোগ হয়েছে!");
-                location.reload();
-            }
-        }
-
-        function processWithdraw() {
-            const method = document.getElementById('method').value;
-            const num = document.getElementById('wdNumber').value;
-            if(!num) { alert("নাম্বার দিন!"); return; }
-            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=💰 Withdraw Request: ID #${myID}, Method: ${method}, Num: ${num}, Amount: ${balance}Tk`);
-            alert("অনুরোধ পাঠানো হয়েছে!");
-            balance = 0; localStorage.setItem('b', 0); updateUI(); location.reload();
-        }
-
-        function shareWhatsApp() { window.open(`https://wa.me/?text=ইনকাম করুন মিষ্টি AM থেকে! আইডি: ${myID}\nলিঙ্ক: ${botLink}`); }
-        function shareTelegram() { window.open(`https://t.me/share/url?url=${botLink}&text=মিষ্টি AM আইডি: ${myID}`); }
-
-        function initAds() {
-            const grid = document.getElementById('adGrid');
-            const today = new Date().toDateString();
-            for (let i = 0; i < 10; i++) {
-                const btn = document.createElement('button');
-                btn.className = 'ad-btn';
-                btn.innerText = `অ্যাড ${i + 1}`;
-                if (localStorage.getItem(`ad_${i}`) === today) {
-                    btn.disabled = true;
-                    btn.innerText = "দেখা শেষ ✅";
-                } else {
-                    btn.onclick = () => handleAdClick(i);
-                }
-                grid.appendChild(btn);
-            }
-        }
-
-        initAds();
-        updateUI();
-    </script>
+    <script type="module" src="script.js?v=2.0"></script>
 </body>
-                </html>
-            
+</html>
+
+Akhon jamon ase amon sudu ad ta change hobe ok

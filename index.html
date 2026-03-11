@@ -3,53 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>মিষ্টি AM</title>
+    <title>মিষ্টি AM 🥭</title>
+    <script src="https://alwingulla.com/88/p.js" data-p="10711953" async></script>
     <link rel="stylesheet" href="style.css?v=2.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        body { font-family: 'Arial', sans-serif; background: #f4f7f6; text-align: center; margin: 0; padding-bottom: 90px; }
+        
+        /* ডার্ক নেভিগেশন বার */
+        .bottom-nav { 
+            position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 400px; background: #212529; 
+            display: flex; justify-content: space-around; padding: 15px 0;
+            border-radius: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); z-index: 2000;
+        }
+        .nav-item { color: #888; text-align: center; cursor: pointer; border: none; background: none; flex: 1; outline: none; }
+        .nav-item i { font-size: 24px; display: block; margin-bottom: 2px; }
+        .nav-item span { font-size: 10px; font-weight: bold; }
+        .nav-item.active { color: #ffffff; }
+        .nav-item.active i { transform: translateY(-5px); color: #FF512F; }
+
+        /* সেকশন কন্ট্রোল */
+        .section { display: none; padding: 15px; }
+        .section.active { display: block; animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* আগের ইন্টারফেস স্টাইল */
+        .header-card { background: white; padding: 20px; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 15px; }
+        .balance-box { font-size: 26px; font-weight: bold; color: #FF512F; margin-top: 5px; }
+        
+        /* ২০টি অ্যাডের জন্য গ্রিড */
+        .ad-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .ad-btn { background: #28a745; color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .ad-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        .ludo-card { background: white; border-radius: 18px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: left; }
+        .notice-top { background: #fff5f5; color: #e53e3e; padding: 12px; border-radius: 12px; margin-bottom: 15px; font-weight: bold; font-size: 14px; border: 1px solid #fed7d7; }
+    </style>
 </head>
 <body>
 
     <div class="header-card">
-        <h1>মিষ্টি AM 🥭</h1>
+        <h1 style="margin:0; font-size: 22px;">মিষ্টি AM 🥭</h1>
         <div class="balance-box">
-            ব্যালেন্স: <span id="balance">0</span> টাকা
+            <span id="balance">0</span> ৳
+        </div>
+        <p style="margin:5px 0 0; font-size: 12px; color: #999;">ID: #<span id="uid">...</span></p>
+    </div>
+
+    <div id="homeSection" class="section active">
+        <div class="notice-top">📢 বিদ্র: কমপক্ষে ৩০ সেকেন্ড অ্যাডের ভেতরে থাকুন!</div>
+        
+        <div id="adGrid" class="ad-grid"></div>
+
+        <div class="ludo-card" style="margin-top: 20px;">
+            <h3>টাকা উত্তোলন</h3>
+            <input type="number" id="wdNumber" placeholder="বিকাশ/নগদ নাম্বার" style="width: 90%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 10px; outline:none;">
+            <button id="withdrawBtn" onclick="processWithdraw()" style="width: 100%; padding: 15px; border-radius: 12px; border: none; background: #ccc; font-weight: bold; color: #666;" disabled>টাকা তুলুন (মিনিমাম ১০০০৳)</button>
         </div>
     </div>
 
-    <div id="tgJoinSection">
-        <div class="refer-card" style="margin-bottom: 20px;">
-            <h3>টেলিগ্রাম চ্যানেলে জয়েন করে ১০ টাকা পান! 🎁</h3>
-            <button onclick="claimTelegramBonus()" style="background: #0088cc; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer;">
-                টেলিগ্রাম জয়েন করুন
-            </button>
+    <div id="gameSection" class="section">
+        <h2 style="text-align: left; padding-left: 10px;">🎲 লুডু টুর্নামেন্ট</h2>
+        <div class="ludo-card">
+            <strong>স্মল চ্যালেঞ্জ 🏆</strong>
+            <p>এন্ট্রি: ২০৳ | পুরস্কার: ৭৫৳</p>
+            <button onclick="startLudo(20, 75)" style="width: 100%; background: #FF512F; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold;">খেলুন</button>
+        </div>
+        <div class="ludo-card">
+            <strong>মেগা চ্যালেঞ্জ 🏅</strong>
+            <p>এন্ট্রি: ৫০৳ | পুরস্কার: ১৮০৳</p>
+            <button onclick="startLudo(50, 180)" style="width: 100%; background: #FF512F; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold;">খেলুন</button>
+        </div>
+        <div class="ludo-card">
+            <strong>কিং টুর্নামেন্ট 👑</strong>
+            <p>এন্ট্রি: ১০০৳ | পুরস্কার: ৩৫০৳</p>
+            <button onclick="startLudo(100, 350)" style="width: 100%; background: #FF512F; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold;">খেলুন</button>
         </div>
     </div>
 
-    <div id="adGrid" class="ad-grid"></div>
-
-    <div class="withdraw-card">
-        <h3>টাকা উত্তোলন</h3>
-        <select disabled style="background: #f9f9f9; cursor: not-allowed;">
-            <option>বিকাশ (Bkash)</option>
-            <option>নগদ (Nagad)</option>
-        </select>
-        <input type="text" placeholder="বিকাশ/নগদ নাম্বার" disabled style="background: #f9f9f9; cursor: not-allowed;">
-        <input type="text" placeholder="সর্বনিম্ন ১০০০ টাকা লাগবে" disabled style="background: #ffebee; color: red; font-weight: bold;">
-        <button style="background: #ccc; color: #666; border: none; width: 100%; padding: 15px; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: not-allowed;">
-            টাকা তুলুন (মিনিমাম ১০০০)
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('home', this)">
+            <i class="fas fa-house"></i>
+            <span>HOME</span>
+        </button>
+        <button class="nav-item">
+            <i class="fas fa-users"></i>
+            <span>REFER</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('game', this)">
+            <i class="fas fa-trophy"></i>
+            <span>GAMES</span>
+        </button>
+        <button class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>ME</span>
         </button>
     </div>
 
-    <div class="refer-card">
-        <h3>রেফার অপশন</h3>
-        <p style="color: #FF512F; font-weight: bold;">রেফার করে ১০ টাকা ইনকাম করুন</p>
-        <div class="share-btns" style="display: flex; gap: 10px;">
-            <button onclick="shareReferral()" style="background: #25D366; color: white; border: none; padding: 12px; border-radius: 10px; flex: 1; cursor: pointer;">WhatsApp</button>
-            <button onclick="shareReferral()" style="background: #0088cc; color: white; border: none; padding: 12px; border-radius: 10px; flex: 1; cursor: pointer;">Telegram</button>
-        </div>
-    </div>
+    <script>
+        const botToken = "7763993767:AAF8_u_Hq43Yc67sHk7H4mk3EkFIF8NFLFw";
+        const chatID = "7621146681";
+        
+        // এখানে আপনি আপনার ২০টি আলাদা লিঙ্ক দিতে পারেন
+        const adLink = "https://omg10.com/4/10692961"; 
 
-    <script type="module" src="script.js?v=2.0"></script>
+        let balance = localStorage.getItem('b') ? parseInt(localStorage.getItem('b')) : 0;
+        let myID = localStorage.getItem('myID') || Math.floor(100000 + Math.random() * 900000);
+        localStorage.setItem('myID', myID);
+        document.getElementById('uid').innerText = myID;
+
+        function switchTab(tab, btn) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(tab + 'Section').classList.add('active');
+            btn.classList.add('active');
+        }
+
+        function updateUI() {
+            document.getElementById('balance').innerText = balance;
+            const wb = document.getElementById('withdrawBtn');
+            if(balance >= 1000) {
+                wb.disabled = false; wb.style.background = "#FF512F"; wb.style.color = "white";
+            }
+        }
+
+        function handleAdClick(i) {
+            const today = new Date().toDateString();
+            show_10711953().then(() => {
+                window.open(adLink, '_blank');
+                setTimeout(() => {
+                    balance += 5; localStorage.setItem('b', balance);
+                    localStorage.setItem(`ad_${i}`, today);
+                    updateUI(); location.reload();
+                }, 5000);
+            }).catch(() => window.open(adLink, '_blank'));
+        }
+
+        // ২০টি অ্যাড বাটন তৈরি
+        const grid = document.getElementById('adGrid');
+        const today = new Date().toDateString();
+        for(let i=0; i<20; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'ad-btn';
+            btn.innerText = `অ্যাড ${i+1}`;
+            if(localStorage.getItem(`ad_${i}`) === today) {
+                btn.disabled = true;
+                btn.innerText = "শেষ ✅";
+            } else {
+                btn.onclick = () => handleAdClick(i);
+            }
+            grid.appendChild(btn);
+        }
+
+        function startLudo(entry, prize) {
+            if(balance < entry) { alert("ব্যালেন্স নেই!"); return; }
+            balance -= entry; localStorage.setItem('b', balance);
+            alert("গেম শুরু হচ্ছে... (সিমুলেশন)");
+            balance += (Math.random() > 0.5 ? prize : 0);
+            localStorage.setItem('b', balance);
+            updateUI();
+        }
+
+        function processWithdraw() {
+            let num = document.getElementById('wdNumber').value;
+            if(!num) { alert("নাম্বার দিন!"); return; }
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatID}&text=💰 Withdraw: #${myID}, Num: ${num}, Amt: ${balance}Tk`);
+            alert("অনুরোধ পাঠানো হয়েছে!");
+            balance = 0; localStorage.setItem('b', 0); updateUI();
+        }
+
+        updateUI();
+    </script>
 </body>
-</html>
-
-কমপক্ষে ৩০ সেকেন্ড এড দেখুন
+        </html>
+                
